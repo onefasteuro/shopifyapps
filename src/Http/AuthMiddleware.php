@@ -16,11 +16,15 @@ class AuthMiddleware extends NonceMiddleware
 		parent::setNonceStore($request);
 		
 		if(!$this->assertNonce($request)) {
-			return abort(403, 'Could not validate the request');
+			return abort(403, 'Could not validate the request. State mismatch.');
 		}
 		
 		if(!$this->assertHMAC($request)) {
-			return abort(403, 'Could not validate the request');
+			return abort(403, 'Could not validate the request. HMAC mismatch.');
+		}
+		
+		if(!$this->assertDomain($request)) {
+			return abort(403, 'Could not validate the request. Domain mismatch.');
 		}
 		
 		return $next($request);
@@ -32,6 +36,13 @@ class AuthMiddleware extends NonceMiddleware
 		
 		//nonce do not match, error out
 		return $nonce === $request->query('state');
+	}
+	
+	protected function assertDomain(Request $request)
+	{
+		$domain = $request->get('shop');
+		
+		return preg_match('/(https|http)\:\/\/[a-zA-Z0-9][a-zA-Z0-9\-]*\.myshopify\.com[\/]?/', $domain);
 	}
 	
 	
