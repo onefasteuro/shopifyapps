@@ -7,8 +7,6 @@ namespace onefasteuro\ShopifyAuth;
 
 class Helpers
 {
-	const NS = 'shopifyauth';
-	
 	private $config = [];
 	private $appname = null;
 	private $nonce;
