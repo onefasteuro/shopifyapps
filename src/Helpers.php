@@ -74,12 +74,15 @@ class Helpers
 	
 	public function getReturnUrl(array $query_vars = [])
 	{
+		$domain = $query_vars['shop_domain'];
 		$r = $this->getAppConfig('return_url');
-		if(count($query_vars) > 0) {
+		
+		if(preg_match('/\.com/', $r)) {
 			return $r . '?' . http_build_query($query_vars);
 		}
 		else {
-			return $r;
+			$url = sprintf($r, $domain);
+			return $url . '?' . http_build_query($query_vars);
 		}
 	}
 	
