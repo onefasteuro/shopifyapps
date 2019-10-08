@@ -89,7 +89,7 @@ class Helpers
 			throw new \Exception('Appname is not defined on ' . __CLASS__);
 		}
 		
-		return $this->config['apps'][$this->apname][$key];
+		return $this->config['apps'][$this->appname][$key];
 	}
 	
 	/**
