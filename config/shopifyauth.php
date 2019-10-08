@@ -7,10 +7,10 @@ return [
 	'oauth_url' => 'https://%s/admin/oauth/access_token',
 	
 	'apps' => [
-		'bridge' => [
-			'client_id' => 'eb861be684c44f75e8f3081b16fb5c1d',
-			'client_secret' => '3d2c4ede12abe9516deb59828ea2a668',
-			'scope' => 'read_products,write_products,read_orders,read_inventory,write_inventory,read_locations',
+		'your app name' => [
+			'client_id' => 'your app client id',
+			'client_secret' => 'your app secret',
+			'scope' => 'your app scope',
 			'return_url' => 'https://%s/admin'
 		]
 	]
