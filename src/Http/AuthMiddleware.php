@@ -42,7 +42,7 @@ class AuthMiddleware extends NonceMiddleware
 	{
 		$domain = $request->get('shop');
 		
-		return preg_match('/(https|http)\:\/\/[a-zA-Z0-9][a-zA-Z0-9\-]*\.myshopify\.com[\/]?/', $domain);
+		return preg_match('/[a-zA-Z0-9\-]+\.myshopify\.com/', $domain);
 	}
 	
 	
