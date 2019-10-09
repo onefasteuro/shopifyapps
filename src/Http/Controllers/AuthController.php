@@ -102,8 +102,8 @@ class AuthController extends \Illuminate\Routing\Controller
 	    //properties necessary
 	    $app->shop_name = $gql['shop']['name'];
 	    $app->shop_domain = $gql['shop']['domain'];
-	    $app->shop_id = Helpers::gidParse($gql['shop']['id']);
-	    $app->app_installation_id = Helpers::gidParse($gql['app']['id']);
+	    $app->shop_id = $gql['shop']['id'];
+	    $app->app_installation_id = $gql['app']['id'];
 	    $app->shop_email = $gql['shop']['email'];
 	    $app->app_name = $appname;
 	    $app->token = $oauth['access_token'];
