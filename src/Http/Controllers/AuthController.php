@@ -87,7 +87,14 @@ class AuthController extends \Illuminate\Routing\Controller
 			dd('error');
 		}
     }
-    
+	
+	/**
+	 * Creates a new model instance of our app, getting necessary details from API
+	 * @param $domain
+	 * @param $appname
+	 * @param $oauth
+	 * @return mixed|ShopifyApp
+	 */
     protected function createShopifyAppInstance($domain, $appname, $oauth)
     {
 	    //let's get the shop details
