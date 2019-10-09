@@ -77,6 +77,7 @@ class AuthController extends \Illuminate\Routing\Controller
 			
 			//returns to the last auth url
 			$return_url = $this->helper->getReturnUrl($query_string);
+			
 			return redirect()->to($return_url);
 
 		}
@@ -89,27 +90,23 @@ class AuthController extends \Illuminate\Routing\Controller
     protected function createShopifyAppInstance($domain, $appname, $oauth)
     {
 	    //let's get the shop details
-	    $shop_details = $this->getShopDetails($oauth['access_token'], $domain);
+	    $gql = $this->getGraphDetails($oauth['access_token'], $domain);
 	    
-	    //lookup our app or create a new one if it doesnt exist yet
-	    $app = ShopifyApp::firstOrCreate(
-	    	[
-		        'shop_domain' => $domain,
-			    'app_name' => $appname
-		    ],
-		    [
-		        'shop_id' => Helpers::gidParse($shop_details['id']),
-			    'shop_name' => $shop_details['name']
-		    ]
-	    );
-
-	    $app->shop_email = $shop_details['email'];
-	    $app->shop_domain = $shop_details['myshopifyDomain'];
-	
-	
-	    //assign the token or scope in case it changed
+	    
+	    //no app found
+	    if(! ( $app = ShopifyApp::findInstallation($domain, $appname, $gql['app']['id']) ) ) {
+	    	$app = new ShopifyApp;
+	    }
+	    
+	    //properties necessary
+	    $app->shop_name = $gql['shop']['name'];
+	    $app->shop_domain = $gql['shop']['domain'];
+	    $app->shop_id = $gql['shop']['id'];
+	    $app->shop_email = $gql['shop']['email'];
+	    $app->app_name = $appname;
 	    $app->token = $oauth['access_token'];
 	    $app->scope = $oauth['scope'];
+	    
 	    $app->save();
 	    
 	    $this->bus->dispatch(new ModelWasSaved($app));
@@ -124,23 +121,28 @@ class AuthController extends \Illuminate\Routing\Controller
 	 * @param $shop
 	 * @return mixed
 	 */
-    protected function getShopDetails($token, $shop)
+    protected function getGraphDetails($token, $shop)
     {
         $this->client->init($shop, $token);
 	
 	    $call = 'query {
+			  app: appInstallation {
+			    id
+			    launchUrl
+			    uninstallUrl
+			  }
 			  shop {
 			    id
 			    name
-			    myshopifyDomain
 			    email
+			    domain: myshopifyDomain
 			  }
 			}';
 	
 	    $r =  $this->client->query($call, []);
 	    
 	    if(array_key_exists('data', $r)){
-	    	return $r['data']['shop'];
+	    	return $r['data'];
 	    }
 	    else {
 	    	//error? handle me

@@ -8,6 +8,7 @@ use onefasteuro\ShopifyAuth\Http\AuthMiddleware;
 use onefasteuro\ShopifyAuth\Http\NonceMiddleware;
 use onefasteuro\ShopifyAuth\Http\Controllers\AuthController;
 use Illuminate\Contracts\Events\Dispatcher as EventBus;
+use Illuminate\Support\Facades\Event;
 
 class ShopifyAuthServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,10 @@ class ShopifyAuthServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../migrations');
         
         $this->loadViewsFrom(__DIR__ . '/../views', 'shopifyauth');
+        
+        //event if needed
+        Event::listen(Events\TokenWasSaved::class, function(Events\TokenWasSaved $event){
+        });
     }
 
 

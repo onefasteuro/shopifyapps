@@ -29,14 +29,16 @@ class ShopifyApp extends Model
 		}
 	}
 	
-	public function setAppInstallationIdAttribute($value)
+	/**
+	 * @param string $domain
+	 * @param string $handle
+	 * @param string $id
+	 * @return mixed
+	 */
+	public static function findInstallation(string $domain, string $handle, string $id)
 	{
-		$value = Helpers::gidParse($value);
-		$this->attributes['app_installation_id'] = $value;
-	}
-	
-	public function getAppInstallationGidAttribute()
-	{
-		return 'gid://shopify/AppInstallation/' . $this->app_installation_id;
+		return static::where('shop_domain', '=', $domain)
+			->where('app_name', '=', $handle)
+			->where('app_installation_id', '=', $id)->first();
 	}
 }
