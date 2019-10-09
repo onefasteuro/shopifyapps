@@ -102,10 +102,12 @@ class AuthController extends \Illuminate\Routing\Controller
     {
 	    //no app found
         $app = ShopifyApp::findInstallation($gql['app']['id']);
+        $created = false;
         if($app === null) {
             $app = new ShopifyApp;
             $app->app_installation_id = $gql['app']['id'];
             $app->shop_id = $gql['shop']['id'];
+            $created = true;
         }
 
         //app necessary properties
@@ -124,7 +126,10 @@ class AuthController extends \Illuminate\Routing\Controller
 	    //save our model
 	    $app->save();
 
-	    $this->events->dispatch(new AppWasCreated($app));
+	    if($created === true) {
+            $this->events->dispatch(new AppWasCreated($app));
+        }
+	    
         $this->events->dispatch(new AppWasSaved($app));
 
 	    return $app;
