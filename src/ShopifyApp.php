@@ -9,13 +9,6 @@ class ShopifyApp extends Model
 {
 	protected $table = 'shopify_apps';
 	
-	protected $fillable = [
-		'shop_domain',
-		'app_name',
-		'shop_id',
-		'shop_name'
-	];
-	
 	//appends to the toArray output
 	protected $appends = ['shopify_shop_id'];
 	
@@ -34,6 +27,16 @@ class ShopifyApp extends Model
 		else {
 			return $this->shop_id;
 		}
-		
+	}
+	
+	public function setAppInstallationIdAttribute($value)
+	{
+		$value = Helpers::gidParse($value);
+		$this->attributes['app_installation_id'] = $value;
+	}
+	
+	public function getAppInstallationGidAttribute()
+	{
+		return 'gid://shopify/AppInstallation/' . $this->app_installation_id;
 	}
 }

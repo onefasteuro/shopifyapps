@@ -14,7 +14,7 @@ class CreateAuthTable extends Migration
     public function up()
     {
 	    Schema::table('shopify_apps', function (Blueprint $table) {
-	        $table->string('app_installation_id', 200)->after('id')->nullable()->default(null)->index('app_installation_id');
+	        $table->bigInteger('app_installation_id')->after('id')->index('app_installation_id');
 	    });
     }
 
