@@ -111,6 +111,7 @@ class AuthController extends \Illuminate\Routing\Controller
 	    
 	    $app->save();
 	    
+	    //dispatch our event, we have a new app saved
 	    $this->bus->dispatch(new ModelWasSaved($app));
 	    
 	    return $app;

@@ -7,7 +7,7 @@ class ModelWasSaved
 {
 	public $model;
 	
-	public function __construct(\onefasteuro\ShopifyAuth\ShopifyApp $model)
+	public function __construct(\onefasteuro\ShopifyAuth\Models\ShopifyApp $model)
 	{
 		$this->model;
 	}
