@@ -14,8 +14,8 @@ class HttpTest extends TestCase
 	public function testGid()
 	{
 		$model = new ShopifyApp;
-		$model->app_installation_id = 'gid://shopify/AppInstallation/193861025843';
-		$model->shop_id = 'gid://shopify/Shop/193861025843';
+		$model->app_installation_id = 'gid://shopify/AppInstallation/193861022222';
+		$model->shop_id = 'gid://shopify/Shop/193861022222';
 		
 		$this->assertIsInt($model->shop_id);
 		$this->assertIsInt($model->app_installation_id);
