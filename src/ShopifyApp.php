@@ -19,11 +19,6 @@ class ShopifyApp extends Model
 	//appends to the toArray output
 	protected $appends = ['shopify_shop_id'];
 	
-	public function bill()
-	{
-		return $this->hasOne(ShopifyBilling::class, 'app_id','id')->withDefault();
-	}
-	
 	public function getShopNameAttribute()
 	{
 		$exploded = explode('.', $this->shop);
@@ -40,10 +35,5 @@ class ShopifyApp extends Model
 			return $this->shop_id;
 		}
 		
-	}
-	
-	public static function findWithBilling($id)
-	{
-		return static::with('bill')->find($id);
 	}
 }
