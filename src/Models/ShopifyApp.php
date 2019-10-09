@@ -19,11 +19,11 @@ class ShopifyApp extends BaseModel
 	 * @param string $id
 	 * @return mixed
 	 */
-	public static function findInstallation(string $domain, string $handle, string $id)
+	public static function findInstallation(string $gid)
 	{
-		return static::where('shop_domain', '=', $domain)
-			->where('app_name', '=', $handle)
-			->where('app_installation_id', '=', $id)->first();
+	    $id = Helpers::gidParse($gid);
+
+		return static::where('app_installation_id', '=', $id)->first();
 	}
 	
 	public function setShopIdAttribute($value)

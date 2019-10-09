@@ -41,6 +41,16 @@ class ShopifyAuthServiceProvider extends ServiceProvider
 		Event::listen(Events\TokenWasReceived::class, function(Events\TokenWasReceived $event){
 			$token = $event->token;
 		});
+
+        //event if needed
+        Event::listen(Events\AppWasCreated::class, function(Events\AppWasCreated $event){
+            $model = $event->model;
+        });
+
+        //event if needed
+        Event::listen(Events\AppWasSaved::class, function(Events\AppWasSaved $event){
+            $model = $event->model;
+        });
 	}
 
 

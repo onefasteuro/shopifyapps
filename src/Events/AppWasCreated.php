@@ -3,7 +3,7 @@
 namespace onefasteuro\ShopifyAuth\Events;
 
 
-class ModelWasSaved
+class AppWasCreated
 {
 	public $model;
 	

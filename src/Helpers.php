@@ -5,6 +5,8 @@ namespace onefasteuro\ShopifyAuth;
 
 
 
+use onefasteuro\ShopifyAuth\Models\ShopifyApp;
+
 class Helpers
 {
 	private $config = [];
@@ -13,7 +15,9 @@ class Helpers
 	
 	const URL_AUTHORIZE = 'https://%s.myshopify.com/admin/oauth/authorize?client_id=%s&scope=%s&state=%s&redirect_uri=%s';
 	const URL_FOR_TOKEN = 'https://%s/admin/oauth/access_token';
-	
+
+	protected $model;
+
 	public function __construct(array $config, Nonce $n)
 	{
 		$this->config = $config;
@@ -70,18 +74,19 @@ class Helpers
 		return $this->getAppConfig('client_secret');
 	}
 	
-	public function getReturnUrl(array $query_vars = [])
+	public function getReturnUrl(ShopifyApp $app)
 	{
-		$domain = $query_vars['shop_domain'];
-		$r = $this->getAppConfig('return_url');
-		
-		if(preg_match('/\.com/', $r)) {
-			return $r . '?' . http_build_query($query_vars);
-		}
-		else {
-			$url = sprintf($r, $domain);
-			return $url . '?' . http_build_query($query_vars);
-		}
+        $url = $this->getAppConfig('return_url');
+
+        switch($url)
+        {
+            case 'route':
+            break;
+
+            default:
+                return $app->app_launch_url;
+                break;
+        }
 	}
 	
 	protected function getAppConfig($key)

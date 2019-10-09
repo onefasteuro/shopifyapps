@@ -4,7 +4,8 @@ namespace onefasteuro\ShopifyAuth\Http\Controllers;
 
 
 use Illuminate\Http\Request;
-use onefasteuro\ShopifyAuth\Events\ModelWasSaved;
+use onefasteuro\ShopifyAuth\Events\AppWasCreated;
+use onefasteuro\ShopifyAuth\Events\AppWasSaved;
 use onefasteuro\ShopifyAuth\Helpers;
 use onefasteuro\ShopifyAuth\Models\ShopifyApp;
 use Requests;
@@ -18,14 +19,14 @@ class AuthController extends \Illuminate\Routing\Controller
 {
 	protected $nonce;
 	protected $client;
-	protected $bus;
+	protected $events;
 	protected $helper;
 	
-	public function __construct(Nonce $nonce, GraphClient $client, EventBus $bus, Helpers $helper)
+	public function __construct(Nonce $nonce, GraphClient $client, EventBus $events, Helpers $helper)
 	{
 		$this->client = $client;
 		$this->nonce = $nonce;
-		$this->bus = $bus;
+		$this->events = $events;
 		$this->helper = $helper;
 	}
 	
@@ -33,7 +34,14 @@ class AuthController extends \Illuminate\Routing\Controller
 	{
 		return view('shopifyauth::' . $view, $data);
 	}
-	
+
+    /**
+     * begin the auth process by automatically redirecting
+     * @param Request $request
+     * @param $appname
+     * @param $shop
+     * @return mixed
+     */
 	public function getBegin(Request $request, $appname, $shop)
 	{
 		$url = $this->helper->setAppName($appname)->getShopAuthUrl($shop);
@@ -64,20 +72,15 @@ class AuthController extends \Illuminate\Routing\Controller
 			$oauth = json_decode($response->body, true);
 			
 			//event, we have a token, do we need it anywhere else?
-			$this->bus->dispatch(new \onefasteuro\ShopifyAuth\Events\TokenWasReceived($oauth['access_token']));
-			
+			$this->events->dispatch(new \onefasteuro\ShopifyAuth\Events\TokenWasReceived($oauth['access_token']));
+
+			//get the graphql details for this app
+            $gql = $this->getGraphDetails($shopdomain, $oauth['access_token']);
+
 			//save our token
-			$app = $this->createShopifyAppInstance($shopdomain, $appname, $oauth);
-			
-			
-			$query_string = [
-				'shop_id' => $app->shop_id,
-				'shop_domain' => $app->shop_domain,
-				'app_name' => $app->app_name
-			];
-			
-			//returns to the last auth url
-			$return_url = $this->helper->getReturnUrl($query_string);
+			$app = static::createShopifyAppInstance($gql, $oauth);
+
+			$return_url = $this->helper->getReturnUrl($app);
 			
 			return redirect()->to($return_url);
 
@@ -95,51 +98,58 @@ class AuthController extends \Illuminate\Routing\Controller
 	 * @param $oauth
 	 * @return mixed|ShopifyApp
 	 */
-    protected function createShopifyAppInstance($domain, $appname, $oauth)
+    protected function createShopifyAppInstance(array $gql, array $oauth)
     {
-	    //let's get the shop details
-	    $gql = $this->getGraphDetails($oauth['access_token'], $domain);
-	    
-	    
 	    //no app found
-	    if(! ( $app = ShopifyApp::findInstallation($domain, $appname, $gql['app']['id']) ) ) {
-	    	$app = new ShopifyApp;
-	    }
-	    
-	    //properties necessary
+        $app = ShopifyApp::findInstallation($gql['app']['id']);
+        if($app === null) {
+            $app = new ShopifyApp;
+            $app->app_installation_id = $gql['app']['id'];
+            $app->shop_id = $gql['shop']['id'];
+        }
+
+        //app necessary properties
+        $app->app_name = $gql['app']['current']['handle'];
+        $app->app_launch_url = $gql['app']['launchUrl'];
+
+	    //shop necessary properties
 	    $app->shop_name = $gql['shop']['name'];
 	    $app->shop_domain = $gql['shop']['domain'];
-	    $app->shop_id = $gql['shop']['id'];
-	    $app->app_installation_id = $gql['app']['id'];
 	    $app->shop_email = $gql['shop']['email'];
-	    $app->app_name = $appname;
+
+	    //oauth data
 	    $app->token = $oauth['access_token'];
 	    $app->scope = $oauth['scope'];
-	    
+
+	    //save our model
 	    $app->save();
-	    
-	    //dispatch our event, we have a new app saved
-	    $this->bus->dispatch(new ModelWasSaved($app));
-	    
+
+	    $this->events->dispatch(new AppWasCreated($app));
+        $this->events->dispatch(new AppWasSaved($app));
+
 	    return $app;
     }
 	
-	
+
+
 	/**
 	 * Fetches a bit more details about this shop from Shopify
 	 * @param $token
-	 * @param $shop
+	 * @param $shopdomain
 	 * @return mixed
 	 */
-    protected function getGraphDetails($token, $shop)
+    protected function getGraphDetails($shopdomain, $token)
     {
-        $this->client->init($shop, $token);
+        $this->client->init($shopdomain, $token);
 	
 	    $call = 'query {
 			  app: appInstallation {
 			    id
 			    launchUrl
 			    uninstallUrl
+			    current: app {
+			        handle
+			    }
 			  }
 			  shop {
 			    id
