@@ -15,7 +15,7 @@ Route::group(['middleware' => ['web']], function () use(&$namespace) {
 	//finish the auth process
 	Route::get('shopify/auth/{appname}',
 		[
-			'as' =>  'shopifyauth.auth.handle',
+			'as' =>  'shopifyauth.handle',
 			'middleware' => [\onefasteuro\ShopifyAuth\Http\NonceMiddleware::class, \onefasteuro\ShopifyAuth\Http\AuthMiddleware::class],
 			'uses' => $namespace . 'AuthController@getAuth'])->where('appname', '[a-z\-0-9]+');
 	
@@ -23,7 +23,7 @@ Route::group(['middleware' => ['web']], function () use(&$namespace) {
 	//Starts the auth process
 	Route::get('shopify/auth/{appname}/{shop}',
 		[
-			'as' =>  'shopifyauth.auth.begin',
+			'as' =>  'shopifyauth.begin',
 			'middleware' => [\onefasteuro\ShopifyAuth\Http\NonceMiddleware::class],
 			'uses' => $namespace . 'AuthController@getBegin'
 		])

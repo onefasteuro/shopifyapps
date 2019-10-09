@@ -34,8 +34,7 @@ class Helpers
 		$base_url = $this->config['shop_auth_url'];
 		
 		//redirect url
-		$route = $this->config['redirect_url'];
-		$redirect = route($route, ['appname' => $this->appname]);
+		$redirect = route('shopifyauth.handle', ['appname' => $this->appname]);
 		
 		$client_id = $this->getClientId();
 		
