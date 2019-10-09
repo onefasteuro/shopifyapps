@@ -2,9 +2,6 @@
 	
 namespace onefasteuro\ShopifyAuth\Tests;
 
-
-	
-use onefasteuro\ShopifyAuth\Helpers;
 use onefasteuro\ShopifyAuth\Models\ShopifyApp;
 
 class HttpTest extends TestCase
