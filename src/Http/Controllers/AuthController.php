@@ -63,11 +63,12 @@ class AuthController extends \Illuminate\Routing\Controller
 		if($response->status_code == 200) {
 			$oauth = json_decode($response->body, true);
 			
+			//event, we have a token, do we need it anywhere else?
+			$this->bus->dispatch(new \onefasteuro\ShopifyAuth\Events\TokenWasSaved($app->token));
+			
 			//save our token
 			$app = $this->createShopifyAppInstance($shopdomain, $appname, $oauth);
 			
-			//event
-			$this->bus->dispatch(new \onefasteuro\ShopifyAuth\Events\TokenWasSaved($app->token));
 			
 			$query_string = [
 				'shop_id' => $app->shop_id,
@@ -101,7 +102,8 @@ class AuthController extends \Illuminate\Routing\Controller
 	    //properties necessary
 	    $app->shop_name = $gql['shop']['name'];
 	    $app->shop_domain = $gql['shop']['domain'];
-	    $app->shop_id = $gql['shop']['id'];
+	    $app->shop_id = Helpers::gidParse($gql['shop']['id']);
+	    $app->app_installation_id = Helpers::gidParse($gql['app']['id']);
 	    $app->shop_email = $gql['shop']['email'];
 	    $app->app_name = $appname;
 	    $app->token = $oauth['access_token'];
