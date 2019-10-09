@@ -56,11 +56,11 @@ class ShopifyAuthServiceProvider extends ServiceProvider
         });
         
         $this->app->singleton(AuthMiddleware::class,function($app){
-        	return new AuthMiddleware($app[Nonce::class]);
+        	return new AuthMiddleware($app[Nonce::class], $app[Helpers::class]);
         });
 	
 	    $this->app->singleton(NonceMiddleware::class,function($app){
-		    return new NonceMiddleware($app[Nonce::class]);
+		    return new NonceMiddleware($app[Nonce::class], $app[Helpers::class]);
 	    });
 	
 	    $this->app->singleton(AuthController::class, function($app){

@@ -5,15 +5,15 @@ namespace onefasteuro\ShopifyAuth\Http;
 
 use Closure;
 use Illuminate\Http\Request;
-use onefasteuro\ShopifyAuth\Nonce;
+use onefasteuro\ShopifyAuth\Helpers;
 
 class AuthMiddleware extends NonceMiddleware
 {
 	
-	
 	public function handle($request, Closure $next)
 	{
 		parent::setNonceStore($request);
+		parent::setHelpersAppName($request);
 		
 		if(!$this->assertNonce($request)) {
 			return abort(403, 'Could not validate the request. State mismatch.');
@@ -61,12 +61,13 @@ class AuthMiddleware extends NonceMiddleware
 			unset($query['signature']);
 		}
 		
+		//sort the array by key
 		ksort($query);
 		
 		
 		$data = urldecode(http_build_query($query));
 		
-		$secret = config('shopifyauth.apps.'.$app.'.client_secret');
+		$secret = $this->helpers->getClientSecret();
 		
 		$calc = hash_hmac('sha256', $data, $secret);
 		
