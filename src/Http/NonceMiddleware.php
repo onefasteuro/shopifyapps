@@ -3,23 +3,19 @@
 namespace onefasteuro\ShopifyAuth\Http;
 
 
-use Closure;
-use onefasteuro\ShopifyAuth\Helpers;
-use onefasteuro\ShopifyAuth\Nonce;
-
 class NonceMiddleware
 {
 	
 	protected $nonce;
 	protected $helpers;
 	
-	public function __construct(Nonce $n, Helpers $h)
+	public function __construct(\onefasteuro\ShopifyAuth\Nonce $n, \onefasteuro\ShopifyAuth\Helpers $h)
 	{
 		$this->helpers = $h;
 		$this->nonce = $n;
 	}
 	
-	public function handle($request, Closure $next)
+	public function handle($request, \Closure $next)
 	{
 		$this->setNonceStore($request);
 		$this->setHelpersAppName($request);

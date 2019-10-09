@@ -3,14 +3,10 @@
 namespace onefasteuro\ShopifyAuth\Http;
 
 
-use Closure;
-use Illuminate\Http\Request;
-use onefasteuro\ShopifyAuth\Helpers;
-
 class AuthMiddleware extends NonceMiddleware
 {
 	
-	public function handle($request, Closure $next)
+	public function handle($request, \Closure $next)
 	{
 		parent::setNonceStore($request);
 		parent::setHelpersAppName($request);
@@ -33,7 +29,7 @@ class AuthMiddleware extends NonceMiddleware
 		return $next($request);
 	}
 	
-	protected function assertNonce(Request $request)
+	protected function assertNonce(\Illuminate\Http\Request $request)
 	{
 		$nonce = $this->nonce->retrieve();
 		
@@ -41,7 +37,7 @@ class AuthMiddleware extends NonceMiddleware
 		return $nonce === $request->query('state');
 	}
 	
-	protected function assertDomain(Request $request)
+	protected function assertDomain(\Illuminate\Http\Request $request)
 	{
 		$domain = $request->get('shop');
 		
@@ -49,7 +45,7 @@ class AuthMiddleware extends NonceMiddleware
 	}
 	
 	
-	protected function assertHMAC(Request $request)
+	protected function assertHMAC(\Illuminate\Http\Request $request)
 	{
 		$query = $request->query();
 		
