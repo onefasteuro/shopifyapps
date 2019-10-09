@@ -3,7 +3,7 @@
 namespace onefasteuro\ShopifyAuth\Events;
 
 
-class TokenWasSaved
+class TokenWasReceived
 {
 	public $token;
 	

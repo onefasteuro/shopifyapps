@@ -30,14 +30,18 @@ class ShopifyAuthServiceProvider extends ServiceProvider
         
         $this->loadViewsFrom(__DIR__ . '/../views', 'shopifyauth');
         
-        //event if needed
-        Event::listen(Events\TokenWasSaved::class, function(Events\TokenWasSaved $event){
-        });
+		$this->bootEvents();
     }
 
 
 
-
+	protected function bootEvents()
+	{
+		//event if needed
+		Event::listen(Events\TokenWasReceived::class, function(Events\TokenWasReceived $event){
+			$token = $event->token;
+		});
+	}
 
 
 

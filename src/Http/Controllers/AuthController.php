@@ -64,7 +64,7 @@ class AuthController extends \Illuminate\Routing\Controller
 			$oauth = json_decode($response->body, true);
 			
 			//event, we have a token, do we need it anywhere else?
-			$this->bus->dispatch(new \onefasteuro\ShopifyAuth\Events\TokenWasSaved($app->token));
+			$this->bus->dispatch(new \onefasteuro\ShopifyAuth\Events\TokenWasReceived($oauth['access_token']));
 			
 			//save our token
 			$app = $this->createShopifyAppInstance($shopdomain, $appname, $oauth);
