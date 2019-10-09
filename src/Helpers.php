@@ -31,8 +31,6 @@ class Helpers
 	
 	public function getShopAuthUrl($shop)
 	{
-		$base_url = $this->config['shop_auth_url'];
-		
 		//redirect url
 		$redirect = route('shopifyauth.handle', ['appname' => $this->appname]);
 		
@@ -43,14 +41,14 @@ class Helpers
 		$state = $this->nonce->createAndSave();
 		
 		//get the URL
-		$url = sprintf($base_url, $shop, $client_id, $scope, $state, $redirect);
+		$url = sprintf('https://%s.myshopify.com/admin/oauth/authorize?client_id=%s&scope=%s&state=%s&redirect_uri=%s', $shop, $client_id, $scope, $state, $redirect);
 		
 		return $url;
 	}
 	
 	public function getOauthUrl($domain)
 	{
-		return sprintf($this->config['oauth_url'], $domain);
+		return sprintf('https://%s/admin/oauth/access_token', $domain);
 	}
 	
 	
@@ -89,7 +87,7 @@ class Helpers
 			throw new \Exception('Appname is not defined on ' . __CLASS__);
 		}
 		
-		return $this->config['apps'][$this->appname][$key];
+		return $this->config[$this->appname][$key];
 	}
 	
 	/**
