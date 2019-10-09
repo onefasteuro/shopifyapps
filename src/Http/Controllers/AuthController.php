@@ -6,7 +6,7 @@ namespace onefasteuro\ShopifyAuth\Http\Controllers;
 use Illuminate\Http\Request;
 use onefasteuro\ShopifyAuth\Events\ModelWasSaved;
 use onefasteuro\ShopifyAuth\Helpers;
-use onefasteuro\ShopifyAuth\ShopifyApp;
+use onefasteuro\ShopifyAuth\Models\ShopifyApp;
 use Requests;
 
 //constructor
