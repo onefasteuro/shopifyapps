@@ -15,14 +15,17 @@ class AuthMiddleware extends NonceMiddleware
 		parent::setNonceStore($request);
 		parent::setHelpersAppName($request);
 		
+		//check if the nonce matches
 		if(!$this->assertNonce($request)) {
 			return abort(403, 'Could not validate the request. State mismatch.');
 		}
 		
+		//check if the HMAC signature matches the request
 		if(!$this->assertHMAC($request)) {
 			return abort(403, 'Could not validate the request. HMAC mismatch.');
 		}
 		
+		//Check if the domain matches
 		if(!$this->assertDomain($request)) {
 			return abort(403, 'Could not validate the request. Domain mismatch.');
 		}
