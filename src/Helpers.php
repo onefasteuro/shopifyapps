@@ -11,6 +11,9 @@ class Helpers
 	private $appname = null;
 	private $nonce;
 	
+	const URL_AUTHORIZE = 'https://%s.myshopify.com/admin/oauth/authorize?client_id=%s&scope=%s&state=%s&redirect_uri=%s';
+	const URL_FOR_TOKEN = 'https://%s/admin/oauth/access_token';
+	
 	public function __construct(array $config, Nonce $n)
 	{
 		$this->config = $config;
@@ -41,14 +44,14 @@ class Helpers
 		$state = $this->nonce->createAndSave();
 		
 		//get the URL
-		$url = sprintf('https://%s.myshopify.com/admin/oauth/authorize?client_id=%s&scope=%s&state=%s&redirect_uri=%s', $shop, $client_id, $scope, $state, $redirect);
+		$url = sprintf(static::URL_AUTHORIZE, $shop, $client_id, $scope, $state, $redirect);
 		
 		return $url;
 	}
 	
 	public function getOauthUrl($domain)
 	{
-		return sprintf('https://%s/admin/oauth/access_token', $domain);
+		return sprintf(static::URL_FOR_TOKEN, $domain);
 	}
 	
 	
