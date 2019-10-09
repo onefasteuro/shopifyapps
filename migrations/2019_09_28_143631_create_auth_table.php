@@ -15,7 +15,7 @@ class CreateAuthTable extends Migration
     {
 	    Schema::create('shopify_apps', function (Blueprint $table) {
 	        $table->bigIncrements('id');
-	        $table->bigInteger('shop_id')->index('shop_id');
+		    $table->string('shop_id', 100)->after('id')->index('shop_id');
 		    $table->string('app_name', 100)->index('app_name');
 		    $table->string('shop_domain', 200)->index('shop_domain');
 		    $table->string('shop_name');

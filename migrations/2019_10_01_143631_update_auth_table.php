@@ -14,8 +14,6 @@ class UpdateAuthTable extends Migration
     public function up()
     {
 	    Schema::table('shopify_apps', function (Blueprint $table) {
-	    	$table->dropColumn('shop_id');
-	    	$table->string('shop_id', 100)->after('id')->index('shop_id');
 	        $table->string('app_installation_id', 100)->after('id')->index('app_installation_id');
 	    });
     }
@@ -28,8 +26,6 @@ class UpdateAuthTable extends Migration
     public function down()
     {
         Schema::table('shopify_apps', function (Blueprint $table) {
-	        $table->dropColumn('shop_id');
-	        $table->bigInteger('shop_id')->index('shop_id')->after('id');
         	$table->dropColumn('app_installation_id');
         });
     }
