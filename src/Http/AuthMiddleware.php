@@ -51,8 +51,6 @@ class AuthMiddleware extends NonceMiddleware
 	
 	protected function assertHMAC(Request $request)
 	{
-		$app = $request->route()->parameter('appname');
-		
 		$query = $request->query();
 		
 		$hmac = $query['hmac'];
