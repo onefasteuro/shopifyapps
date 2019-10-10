@@ -8,7 +8,7 @@ use onefasteuro\ShopifyClient\GraphClient;
 interface BillingContract
 {
 	
-	public static function authorizeCharge(ModelContract $model, GraphClient $client);
+	public static function authorizeCharge(GraphClient $client, $return_url);
 	
 	public static function testCharge();
 	

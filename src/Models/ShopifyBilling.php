@@ -31,15 +31,4 @@ class ShopifyBilling extends Model implements ModelContract
 	{
 		return '';
 	}
-	
-	public function getReturnUrlAttribute()
-	{
-		$url = Helpers::config($this->bill_app->app_name, 'billing.return_url');
-		switch($url) {
-			
-			default:
-				return $this->bill_app->app_launch_url;
-				break;
-		}
-	}
 }

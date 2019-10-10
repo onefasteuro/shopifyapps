@@ -34,7 +34,7 @@ class Helpers
 	
 	public static function getBillingProvider($appname)
 	{
-		$plans_class = Helpers::config($appname, 'billing.provider');
+		$plans_class = Helpers::config($appname, 'billing');
 		return $plans_class;
 	}
 	

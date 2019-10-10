@@ -9,6 +9,10 @@ use onefasteuro\ShopifyClient\GraphClient;
 
 class RecurringBilling implements BillingContract
 {
+    public static function name()
+    {
+        return 'GP Bridge sync';
+    }
 	
 	public static function testCharge()
 	{
@@ -20,10 +24,8 @@ class RecurringBilling implements BillingContract
 		return 0;
 	}
 	
-	public static function authorizeCharge(ModelContract $model, GraphClient $client)
+	public static function authorizeCharge(GraphClient $client, $return_url)
 	{
-		$client->init($model->shop_domain, $model->token);
-		
 		$call =  'mutation($trial: Int, $test: Boolean, $name: String!, $return: URL!) {
 			  appSubscriptionCreate(
 			    test: $test
@@ -52,9 +54,9 @@ class RecurringBilling implements BillingContract
 		
 		return $client->query($call, [
 			'test' => static::testCharge(),
-			'name' => Helpers::config($model->app_name, 'billing.name'),
+			'name' => static::name(),
 			'trial' => static::trialDuration(),
-			'return' => $model->launch_url
+			'return' => $return_url,
 		]);
 	}
 }

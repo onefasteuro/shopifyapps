@@ -24,16 +24,13 @@ class BillingController extends AuthController
 			//prepare our client
 			$this->client->init($model->shop_domain, $model->token);
 			
-			$provider = Helpers::getBillingProvider($appname);
+			$provider = $model->billing_provider;
 			
-			$response = call_user_func_array([$provider, 'authorizeCharge'], [$model, $this->client]);
-			dd($response);
-			
-			/*
-			$bill->purchase_id = $response['id'];
-			$bill->save();
-			*/
-			
+			$response = call_user_func_array([$provider, 'authorizeCharge'], [$this->client]);
+
+			$model->updateBillingPurchaseId($response['id']);
+
+
 			//sends back to shopify so merchant can agree to not to the terms of the plan
 			return redirect()->to($response['url']);
 		}

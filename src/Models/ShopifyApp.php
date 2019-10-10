@@ -70,7 +70,11 @@ class ShopifyApp extends BaseModel implements \onefasteuro\ShopifyApps\Contracts
 	{
 		return $this->app_launch_url;
 	}
-	
+
+	public function getBillingProviderAttribute()
+    {
+        return Helpers::getBillingProvider($this->app_name);
+    }
 	
 	public function getReturnUrlAttribute()
 	{
@@ -82,5 +86,11 @@ class ShopifyApp extends BaseModel implements \onefasteuro\ShopifyApps\Contracts
 				break;
 		}
 	}
+
+	public function updateBillingPurchaseId($id)
+    {
+        $this->bill->purchase_id = $id;
+        $this->bill->save();
+    }
 }
 

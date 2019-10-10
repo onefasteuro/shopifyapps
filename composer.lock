@@ -677,12 +677,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyclient.git",
-                "reference": "cb19136c394ee892c29d2d92cb23a27a64b7fc79"
+                "reference": "d4f08da269e1a0443768b190fac70f11d8188317"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/cb19136c394ee892c29d2d92cb23a27a64b7fc79",
-                "reference": "cb19136c394ee892c29d2d92cb23a27a64b7fc79",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/d4f08da269e1a0443768b190fac70f11d8188317",
+                "reference": "d4f08da269e1a0443768b190fac70f11d8188317",
                 "shasum": ""
             },
             "require": {
@@ -728,7 +728,7 @@
                 "laravel",
                 "shopify"
             ],
-            "time": "2019-10-10T20:17:54+00:00"
+            "time": "2019-10-10T20:53:31+00:00"
         },
         {
             "name": "opis/closure",
