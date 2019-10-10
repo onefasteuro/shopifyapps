@@ -9,10 +9,10 @@ return [
 		'return_url' => 'launch',
 		'billing' => [
 			'test' => true,
-			'trial' => 0,
+			'trial' => false,
 			'name' => 'testname',
-			'return_url' => 'shopifybilling.complete',
-			'return_to' => 'shop-apps',
+			'complete_url' => 'shopify.billing.complete',
+			'return_url' => 'shop-apps',
 			'provider' => \onefasteuro\ShopifyApps\Billing\RecurringBilling::class
 		]
 	]

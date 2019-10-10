@@ -3,7 +3,7 @@
 namespace onefasteuro\ShopifyApps\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use onefasteuro\ShopifyAuth\Helpers;
+use onefasteuro\ShopifyApps\Helpers;
 use onefasteuro\ShopifyApps\Contracts\ModelContract;
 
 class ShopifyBilling extends Model implements ModelContract
@@ -30,5 +30,16 @@ class ShopifyBilling extends Model implements ModelContract
 	public function getPurchaseGidAttribute()
 	{
 		return '';
+	}
+	
+	public function getReturnUrlAttribute()
+	{
+		$url = Helpers::config($this->bill_app->app_name, 'billing.return_url');
+		switch($url) {
+			
+			default:
+				return $this->bill_app->app_launch_url;
+				break;
+		}
 	}
 }

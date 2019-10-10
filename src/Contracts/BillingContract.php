@@ -3,11 +3,14 @@
 namespace onefasteuro\ShopifyApps\Contracts;
 
 
+use onefasteuro\ShopifyClient\GraphClient;
 
 interface BillingContract
 {
 	
-	public function parseResponse(array $response);
+	public static function authorizeCharge(ModelContract $model, GraphClient $client);
 	
-	public function bill(ModelContract $model);
+	public static function testCharge();
+	
+	public static function trialDuration();
 }

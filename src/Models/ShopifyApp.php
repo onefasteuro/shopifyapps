@@ -47,6 +47,15 @@ class ShopifyApp extends BaseModel implements \onefasteuro\ShopifyApps\Contracts
 		$this->attributes['app_installation_id'] = Helpers::gidParse($value);
 	}
 	
+	public function getFqdnAttribute()
+	{
+		if(!preg_match('/http\:\/\//', $this->shop_domain)) {
+			return sprintf('https://%s', $this->shop_domain);
+		}
+		
+		return $this->shop_domain;
+	}
+	
 	public function getShopGidAttribute()
 	{
 		return Helpers::gidRestore($this->shop_id, 'Shop');
@@ -57,6 +66,11 @@ class ShopifyApp extends BaseModel implements \onefasteuro\ShopifyApps\Contracts
 		return Helpers::gidRestore($this->app_installation_id, 'AppInstallation');
 	}
 	
+	public function getLaunchUrlAttribute()
+	{
+		return $this->app_launch_url;
+	}
+	
 	
 	public function getReturnUrlAttribute()
 	{
@@ -64,7 +78,7 @@ class ShopifyApp extends BaseModel implements \onefasteuro\ShopifyApps\Contracts
 		switch($url) {
 			
 			default:
-				return $this->app_launch_url;
+				return $this->launch_url;
 				break;
 		}
 	}

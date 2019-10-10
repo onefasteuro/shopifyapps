@@ -14,9 +14,10 @@
     "require": {
         "ext-json": "*",
         "illuminate/support": "^6.0",
+        "illuminate/config": "^6.0",
         "rmccue/requests": "^1.7",
         "illuminate/events": "^6.0",
-        "onefasteuro/shopifyclient": "1.02"
+        "onefasteuro/shopifyclient": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0",

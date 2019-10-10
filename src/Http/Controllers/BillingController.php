@@ -4,72 +4,84 @@ namespace onefasteuro\ShopifyApps\Http\Controllers;
 
 
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Events\Dispatcher as EventBus;
+
+//exceptions
+use onefasteuro\ShopifyApps\Exceptions\GraphqlException;
+use onefasteuro\ShopifyApps\Exceptions\ModelException;
 
 //models
-use onefasteuro\ShopifyApps\BillingRegistry;
+use onefasteuro\ShopifyApps\Helpers;
 use onefasteuro\ShopifyApps\Models\ShopifyApp;
 
-class BillingController extends \Illuminate\Routing\Controller
+class BillingController extends AuthController
 {
-	
-	protected $events;
-	protected $registry;
-	
-	public function __construct(EventBus $events, BillingRegistry $registry)
+
+	public function redirectToBill(Request $request, $appname, $id)
 	{
-		$this->registry = $registry;
-		$this->events = $events;
+		try {
+			$model = static::getModel($appname, $id);
+			
+			//prepare our client
+			$this->client->init($model->shop_domain, $model->token);
+			
+			$provider = Helpers::getBillingProvider($appname);
+			
+			$response = call_user_func_array([$provider, 'authorizeCharge'], [$model, $this->client]);
+			dd($response);
+			
+			/*
+			$bill->purchase_id = $response['id'];
+			$bill->save();
+			*/
+			
+			//sends back to shopify so merchant can agree to not to the terms of the plan
+			return redirect()->to($response['url']);
+		}
+		catch(ModelException $e)
+		{
+			abort($e->getCode(), $e->getMessage());
+		}
+		catch(GraphqlException $e)
+		{
+			dd($e);
+		}
+		catch(\Exception $e) {
+			dd($e);
+		}
 	}
 	
-
-	public function startBilling(Request $request, $id)
-	{
-		$model = $this->getModel($id);
-		
-		//get the provider
-		$provider = $this->registry->get($model->app_name);
-		
-		//ready our provider
-		$provider->init($model->shop_domain, $model->token, $model->id);
-		
-		
-		$response = $provider->bill();
-		
-		//update our model and save
-		$model->bill->purchase_id = $response['id'];
-		$model->bill->save();
-		
-		//sends back to shopify so merchant can agree to not to the terms of the plan
-		return redirect()->to($response['url']);
-	}
-	
 	
 
-	public function endBilling(Request $request, $app_name, $id)
+	public function saveTransaction(Request $request, $appname, $id)
 	{
-		$model = $this->getModel($id);
+		try {
+			$model = static::getModel($appname, $id);
+			$this->provider->init($model);
+		}
+		catch(ModelException $e)
+		{
+			abort($e->getCode(), $e->getMessage());
+		}
+		
+		$bill = $model->getRelation('bill');
 		
 		//update the purchase status
-		$model->bill->purchase_completed = true;
-		$model->bill->charge_id = $request->get('charge_id');
-		$model->bill->save();
+		$bill->purchase_completed = true;
+		$bill->charge_id = $request->get('charge_id');
+		$bill->save();
 		
-		//get our final return URL
-		$final_url = $this->registry->get($model->app_name)->getCompletedUrl();
-		return redirect()->to($final_url);
+		return redirect()->to($bill->return_url);
 		
 	}
 	
-	protected function getModel($id)
+	protected static function getModel($appname, $id)
 	{
-		$model = ShopifyApp::with('bill')->find((int)$id);
+		$model = ShopifyApp::with('bill')->where('app_name', '=', $appname)->where('id', '=', (int)$id)->first();
 		
 		if(!$model) {
-		
+			Throw new ModelException('Could not find the application.', 400);
 		}
 		
 		return $model;
 	}
 }
-

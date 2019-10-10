@@ -3,17 +3,12 @@
 namespace onefasteuro\ShopifyApps;
 
 
-
-
-use onefasteuro\ShopifyApps\Models\ShopifyApp;
-
 class Helpers
 {
 	
 	const NS = 'shopifyapps';
 	const URL_AUTHORIZE = 'https://%s.myshopify.com/admin/oauth/authorize?client_id=%s&scope=%s&state=%s&redirect_uri=%s';
 	const URL_FOR_TOKEN = 'https://%s/admin/oauth/access_token';
-	
 	
 	
 	public static function config($appname, $key)
@@ -37,11 +32,11 @@ class Helpers
 		return $url;
 	}
 	
-	public function getOauthUrl($domain)
+	public static function getBillingProvider($appname)
 	{
-		return sprintf(static::URL_FOR_TOKEN, $domain);
+		$plans_class = Helpers::config($appname, 'billing.provider');
+		return $plans_class;
 	}
-	
 	
 	/**
 	 * Parses a GID and returns an id

@@ -2,13 +2,29 @@
 
 namespace onefasteuro\ShopifyApps\Billing;
 
+use onefasteuro\ShopifyApps\Contracts\BillingContract;
+use onefasteuro\ShopifyApps\Contracts\ModelContract;
+use onefasteuro\ShopifyApps\Helpers;
+use onefasteuro\ShopifyClient\GraphClient;
 
-class RecurringBilling extends BaseBilling
+class RecurringBilling implements BillingContract
 {
 	
-	public function bill(\onefasteuro\ShopifyApps\Contracts\ModelContract $model)
+	public static function testCharge()
 	{
-		$call = 'mutation($trial: Int, $test: Boolean, $name: String!, $return: URL!) {
+		return true;
+	}
+	
+	public static function trialDuration()
+	{
+		return 0;
+	}
+	
+	public static function authorizeCharge(ModelContract $model, GraphClient $client)
+	{
+		$client->init($model->shop_domain, $model->token);
+		
+		$call =  'mutation($trial: Int, $test: Boolean, $name: String!, $return: URL!) {
 			  appSubscriptionCreate(
 			    test: $test
 			    name: $name
@@ -34,36 +50,11 @@ class RecurringBilling extends BaseBilling
 			}';
 		
 		
-		$response =  $this->client->query($call, [
-				"trial" => $this->getTrial(),
-				"test" => $this->getTest(),
-				"name"  => $this->getName(),
-				"return" => $this->getReturnUrl(),
-			]
-		);
-		
-		$output = $this->parseResponse($response);
-		
-		//no proper output?
-		if(!$output) {
-			//TODO: error
-		}
-		
-		return $output;
+		return $client->query($call, [
+			'test' => static::testCharge(),
+			'name' => Helpers::config($model->app_name, 'billing.name'),
+			'trial' => static::trialDuration(),
+			'return' => $model->launch_url
+		]);
 	}
-	
-	
-	public function parseResponse(array $r)
-	{
-		if(array_key_exists('data', $r)) {
-			$url = $r['data']['appSubscriptionCreate']['confirmationUrl'];
-			$sub_id = $r['data']['appSubscriptionCreate']['appSubscription']['id'];
-			
-			return ['url' => $url, 'id' => $sub_id];
-		}
-		
-		return false;
-	}
-	
-	
 }

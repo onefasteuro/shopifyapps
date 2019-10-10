@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b61cb484b393f2baf8ac522b412afa6",
+    "content-hash": "91bb29716189c71cb5e35afeb295c21b",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -673,20 +673,21 @@
         },
         {
             "name": "onefasteuro/shopifyclient",
-            "version": "1.02",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyclient.git",
-                "reference": "c670cb4c8b6d483c4eca8af691295e9f8bffb9d0"
+                "reference": "cb19136c394ee892c29d2d92cb23a27a64b7fc79"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/c670cb4c8b6d483c4eca8af691295e9f8bffb9d0",
-                "reference": "c670cb4c8b6d483c4eca8af691295e9f8bffb9d0",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/cb19136c394ee892c29d2d92cb23a27a64b7fc79",
+                "reference": "cb19136c394ee892c29d2d92cb23a27a64b7fc79",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
+                "illuminate/config": "^6.0",
                 "illuminate/support": "^6.0",
                 "rmccue/requests": "^1.7"
             },
@@ -694,7 +695,8 @@
                 "mockery/mockery": "^1.1",
                 "orchestra/testbench": "^4.0",
                 "phpunit/phpunit": "^8.0",
-                "sempro/phpunit-pretty-print": "^1.0"
+                "sempro/phpunit-pretty-print": "^1.0",
+                "vlucas/phpdotenv": "v3.6.0"
             },
             "type": "library",
             "extra": {
@@ -726,7 +728,7 @@
                 "laravel",
                 "shopify"
             ],
-            "time": "2019-10-04T20:24:42+00:00"
+            "time": "2019-10-10T20:17:54+00:00"
         },
         {
             "name": "opis/closure",
@@ -4411,7 +4413,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "onefasteuro/shopifyclient": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

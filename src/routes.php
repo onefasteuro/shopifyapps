@@ -3,7 +3,7 @@
 $namespace = 'onefasteuro\ShopifyApps\Http\Controllers\\';
 
 
-	
+
 
 
 
@@ -40,15 +40,17 @@ Route::group(['middleware' => ['web']], function () use(&$namespace) {
 
 	
 	
-	Route::get('shopify/billing/{id}/complete', [
+	Route::get('shopify/billing/{appname}/{id}/complete', [
 		'as' =>  'shopify.billing.complete',
-		'uses' => $namespace . 'BillingController@endBilling',
-	])->where('id', '[0-9]+');
+		'uses' => $namespace . 'BillingController@saveTransaction',
+	])->where('appname', '[a-z\-0-9]+')
+		->where('id', '[0-9]+');
 	
 	
-	Route::get('shopify/billing/{id}', [
-		'as' =>  'shopify.billing.start',
-		'uses' => $namespace . 'BillingController@startBilling',
-	])->where('id', '[0-9]+');
+	Route::get('shopify/billing/{appname}/{id}', [
+		'as' =>  'shopify.billing.redirect',
+		'uses' => $namespace . 'BillingController@redirectToBill',
+	])->where('appname', '[a-z\-0-9]+')
+		->where('id', '[0-9]+');
 	
 });

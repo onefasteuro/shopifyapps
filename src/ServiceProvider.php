@@ -9,8 +9,10 @@ use onefasteuro\ShopifyApps\Http\NonceMiddleware;
 use onefasteuro\ShopifyApps\Http\Controllers\AuthController;
 use Illuminate\Contracts\Events\Dispatcher as EventBus;
 
+use onefasteuro\ShopifyApps\Contracts\BillingContract;
 
 use onefasteuro\ShopifyApps\Http\Controllers\BillingController;
+use onefasteuro\ShopifyClient\GraphClient;
 
 class ServiceProvider extends BaseProvider
 {
@@ -33,24 +35,8 @@ class ServiceProvider extends BaseProvider
         $this->loadViewsFrom(__DIR__ . '/../views', 'shopifyapps');
         
 		$this->loadEvents();
-		
-		//$this->loadBillingProviders();
     }
-	
-	protected function loadBillingProviders()
-	{
-		
-		$providers = $this->app['config']->get('shopifybilling');
-		
-		foreach($providers as $app_name => $p) {
-			$c = $p['provider'];
-			$provider = new $c($this->app[EventBus::class], $this->app[GraphClient::class], $p);
-			
-			$this->app[BillingRegistry::class]->register($app_name, $provider);
-		}
-	}
-
-
+    
 
 	protected function loadEvents()
 	{
@@ -99,15 +85,10 @@ class ServiceProvider extends BaseProvider
 	    $this->app->singleton(AuthController::class, function($app){
 		    return new AuthController( $app[Nonce::class], $app[\onefasteuro\ShopifyClient\GraphClient::class], $app[EventBus::class]);
 	    });
-	    
-	    
-	    //billing
-	    $this->app->singleton(BillingRegistry::class, function($app){
-		    return new BillingRegistry;
-	    });
+
 	
 	    $this->app->singleton(BillingController::class, function($app) {
-		    return new BillingController($app[EventBus::class], $app[BillingRegistry::class]);
+		    return new BillingController($app[Nonce::class], $app[\onefasteuro\ShopifyClient\GraphClient::class], $app[EventBus::class]);
 	    });
     }
     
