@@ -6,7 +6,7 @@ namespace onefasteuro\ShopifyApps\Models;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 use onefasteuro\ShopifyApps\Helpers;
 
-class ShopifyApp extends BaseModel
+class ShopifyApp extends BaseModel implements \onefasteuro\ShopifyApps\Contracts\ModelContract
 {
 	protected $table = 'shopify_apps';
 	
@@ -55,6 +55,18 @@ class ShopifyApp extends BaseModel
 	public function getAppInstallationGidAttribute()
 	{
 		return Helpers::gidRestore($this->app_installation_id, 'AppInstallation');
+	}
+	
+	
+	public function getReturnUrlAttribute()
+	{
+		$url = Helpers::config($this->app_name, 'return_url');
+		switch($url) {
+			
+			default:
+				return $this->app_launch_url;
+				break;
+		}
 	}
 }
 

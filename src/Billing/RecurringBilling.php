@@ -6,16 +6,7 @@ namespace onefasteuro\ShopifyApps\Billing;
 class RecurringBilling extends BaseBilling
 {
 	
-	/**
-	 * Trial time, in days
-	 * @return int
-	 */
-	public function getTrial()
-	{
-		return $this->config['trial'];
-	}
-	
-	public function bill()
+	public function bill(\onefasteuro\ShopifyApps\Contracts\ModelContract $model)
 	{
 		$call = 'mutation($trial: Int, $test: Boolean, $name: String!, $return: URL!) {
 			  appSubscriptionCreate(

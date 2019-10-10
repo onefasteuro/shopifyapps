@@ -14,9 +14,6 @@ class Helpers
 	const URL_AUTHORIZE = 'https://%s.myshopify.com/admin/oauth/authorize?client_id=%s&scope=%s&state=%s&redirect_uri=%s';
 	const URL_FOR_TOKEN = 'https://%s/admin/oauth/access_token';
 	
-	private $nonce;
-	
-
 	
 	
 	public static function config($appname, $key)
@@ -45,21 +42,6 @@ class Helpers
 		return sprintf(static::URL_FOR_TOKEN, $domain);
 	}
 	
-	
-	public function getReturnUrl(ShopifyApp $app)
-	{
-        $url = $this->getAppConfig('return_url');
-
-        switch($url)
-        {
-            case 'route':
-            break;
-
-            default:
-                return $app->app_launch_url;
-                break;
-        }
-	}
 	
 	/**
 	 * Parses a GID and returns an id

@@ -8,7 +8,6 @@ use onefasteuro\ShopifyApps\Http\AuthMiddleware;
 use onefasteuro\ShopifyApps\Http\NonceMiddleware;
 use onefasteuro\ShopifyApps\Http\Controllers\AuthController;
 use Illuminate\Contracts\Events\Dispatcher as EventBus;
-use Illuminate\Support\Facades\Event;
 
 
 use onefasteuro\ShopifyApps\Http\Controllers\BillingController;
@@ -55,18 +54,20 @@ class ServiceProvider extends BaseProvider
 
 	protected function loadEvents()
 	{
+		$events = $this->app['events'];
+		
 		//event if needed
-		Event::listen(Events\TokenWasReceived::class, function(Events\TokenWasReceived $event){
+		$events->listen(Events\TokenWasReceived::class, function(Events\TokenWasReceived $event){
 			$token = $event->token;
 		});
 
         //event if needed
-        Event::listen(Events\AppWasCreated::class, function(Events\AppWasCreated $event){
+		$events->listen(Events\AppWasCreated::class, function(Events\AppWasCreated $event){
             $model = $event->model;
         });
 
         //event if needed
-        Event::listen(Events\AppWasSaved::class, function(Events\AppWasSaved $event){
+		$events->listen(Events\AppWasSaved::class, function(Events\AppWasSaved $event){
             $model = $event->model;
         });
 	}

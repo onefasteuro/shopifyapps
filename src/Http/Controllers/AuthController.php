@@ -56,8 +56,6 @@ class AuthController extends \Illuminate\Routing\Controller
 
     public function getAuth(Request $request, $appname)
     {
-    	$this->helper->setAppName($appname);
-    	
     	//params sent from shopify
 	    $shopdomain = $request->get('shop');
     	$code = $request->get('code');
@@ -65,8 +63,8 @@ class AuthController extends \Illuminate\Routing\Controller
     	$token_url = $this->helper->getOauthUrl($shopdomain);
     	
     	$body = [
-    		'client_id' => $this->helper->getClientId(),
-		    'client_secret' => $this->helper->getClientSecret(),
+    		'client_id' => Helpers::config($appname, 'client_id'),
+		    'client_secret' => Helpers::config($appname, 'client_secret'),
 		    'code' => $code
 	    ];
     	
@@ -84,16 +82,13 @@ class AuthController extends \Illuminate\Routing\Controller
 
 			//save our token
 			$app = static::createShopifyAppInstance($gql, $oauth);
-
-			$return_url = $this->helper->getReturnUrl($app);
 			
-			return redirect()->to($return_url);
+			//return to that URL
+			return redirect()->to($app->return_url);
 
 		}
-		else {
-			//error? handle me
-			dd('error');
-		}
+	
+	    dd('error');
     }
 	
 	/**

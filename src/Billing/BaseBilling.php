@@ -30,33 +30,7 @@ abstract class BaseBilling implements BillingContract
 		return $this;
 	}
 	
-	public function set($key, $url)
-	{
-		$this->config[$key] =  $url;
-		return $this;
-	}
-	
-	abstract public function bill();
-	
-	public function getName()
-	{
-		return $this->config['name'];
-	}
-	
-	public function getTest()
-	{
-		return $this->config['test'];
-	}
-	
-	public function getCompletedUrl()
-	{
-		$this->config['completed_url'];
-	}
-	
-	public function getReturnUrl()
-	{
-		return route($this->config['return_url'], ['id' => $this->shopify_app_id]);
-	}
+	abstract public function bill(\onefasteuro\ShopifyApps\Contracts\ModelContract $model);
 	
 	abstract public function parseResponse(array $response);
 	
