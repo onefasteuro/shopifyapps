@@ -31,11 +31,11 @@ class ServiceProvider extends BaseProvider
 
         $this->loadMigrationsFrom(__DIR__.'/../migrations');
         
-        $this->loadViewsFrom(__DIR__ . '/../views', 'shopifyauth');
+        $this->loadViewsFrom(__DIR__ . '/../views', 'shopifyapps');
         
 		$this->loadEvents();
 		
-		$this->loadBillingProviders();
+		//$this->loadBillingProviders();
     }
 	
 	protected function loadBillingProviders()
@@ -88,19 +88,15 @@ class ServiceProvider extends BaseProvider
         });
         
         $this->app->singleton(AuthMiddleware::class,function($app){
-        	return new AuthMiddleware($app[Nonce::class], $app[Helpers::class]);
+        	return new AuthMiddleware($app[Nonce::class]);
         });
 	
 	    $this->app->singleton(NonceMiddleware::class,function($app){
-		    return new NonceMiddleware($app[Nonce::class], $app[Helpers::class]);
+		    return new NonceMiddleware($app[Nonce::class]);
 	    });
 	
 	    $this->app->singleton(AuthController::class, function($app){
-		    return new AuthController( $app[Nonce::class], $app[\onefasteuro\ShopifyClient\GraphClient::class], $app[EventBus::class], $app[Helpers::class]);
-	    });
-	    
-	    $this->app->singleton(Helpers::class, function($app){
-	    	return new Helpers($app['config']->get('shopifyapps'), $app[Nonce::class]);
+		    return new AuthController( $app[Nonce::class], $app[\onefasteuro\ShopifyClient\GraphClient::class], $app[EventBus::class]);
 	    });
 	    
 	    

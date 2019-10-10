@@ -15,29 +15,39 @@ Route::group(['middleware' => ['web']], function () use(&$namespace) {
 	//finish the auth process
 	Route::get('shopify/auth/{appname}',
 		[
-			'as' =>  'shopifyauth.handle',
+			'as' =>  'shopify.auth.handle',
 			'middleware' => [\onefasteuro\ShopifyApps\Http\NonceMiddleware::class, \onefasteuro\ShopifyApps\Http\AuthMiddleware::class],
-			'uses' => $namespace . 'AuthController@getAuth'])->where('appname', '[a-z\-0-9]+');
+			'uses' => $namespace . 'AuthController@handleAuth'])->where('appname', '[a-z\-0-9]+');
 	
+	//Starts the auth process
+	Route::get('shopify/auth/{appname}/{shop}/url',
+		[
+			'as' =>  'shopify.auth.url',
+			'middleware' => [\onefasteuro\ShopifyApps\Http\NonceMiddleware::class],
+			'uses' => $namespace . 'AuthController@getAuthUrl'
+		])
+		->where('appname', '[a-z\-0-9]+')->where('shop', '[a-z\-0-9]+');
 	
 	//Starts the auth process
 	Route::get('shopify/auth/{appname}/{shop}',
 		[
-			'as' =>  'shopifyauth.begin',
+			'as' =>  'shopify.auth.redirect',
 			'middleware' => [\onefasteuro\ShopifyApps\Http\NonceMiddleware::class],
-			'uses' => $namespace . 'AuthController@getBegin'
+			'uses' => $namespace . 'AuthController@redirectToAuth'
 		])
 		->where('appname', '[a-z\-0-9]+')->where('shop', '[a-z\-0-9]+');
 	
+
+	
 	
 	Route::get('shopify/billing/{id}/complete', [
-		'as' =>  'shopifybilling.complete',
+		'as' =>  'shopify.billing.complete',
 		'uses' => $namespace . 'BillingController@endBilling',
 	])->where('id', '[0-9]+');
 	
 	
 	Route::get('shopify/billing/{id}', [
-		'as' =>  'shopifybilling.start',
+		'as' =>  'shopify.billing.start',
 		'uses' => $namespace . 'BillingController@startBilling',
 	])->where('id', '[0-9]+');
 	

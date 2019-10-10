@@ -2,15 +2,15 @@
 
 return [
 	
-	'your app name' => [
-		'client_id' => 'your app client id',
-		'client_secret' => 'your app secret',
-		'scope' => 'your app scope',
-		'return_url' => 'https://%s/admin',
+	'test-app' => [
+		'client_id' => 'test-client_id',
+		'client_secret' => 'test-client_secret',
+		'scope' => 'test_scope',
+		'return_url' => 'launch',
 		'billing' => [
 			'test' => true,
 			'trial' => 0,
-			'name' => 'Sync Inventory with GP',
+			'name' => 'testname',
 			'return_url' => 'shopifybilling.complete',
 			'return_to' => 'shop-apps',
 			'provider' => \onefasteuro\ShopifyApps\Billing\RecurringBilling::class

@@ -9,46 +9,33 @@ use onefasteuro\ShopifyApps\Models\ShopifyApp;
 
 class Helpers
 {
-	private $config = [];
-	private $appname = null;
-	private $nonce;
 	
+	const NS = 'shopifyapps';
 	const URL_AUTHORIZE = 'https://%s.myshopify.com/admin/oauth/authorize?client_id=%s&scope=%s&state=%s&redirect_uri=%s';
 	const URL_FOR_TOKEN = 'https://%s/admin/oauth/access_token';
+	
+	private $nonce;
+	
 
-	protected $model;
-
-	public function __construct(array $config, Nonce $n)
-	{
-		$this->config = $config;
-		$this->nonce = $n;
-	}
 	
-	public function setAppName($a)
-	{
-		$this->appname = $a;
-		return $this;
-	}
 	
-	public function appName()
+	public static function config($appname, $key)
 	{
-		return $this->appname;
+		return config(static::NS . '.' . $appname . '.' . $key);
 	}
 	
 	
-	public function getShopAuthUrl($shop)
+	public static function getShopAuthUrl($appname, $shop, $nonce)
 	{
 		//redirect url
-		$redirect = route('shopifyauth.handle', ['appname' => $this->appname]);
+		$redirect = route('shopify.auth.handle', ['appname' => $appname]);
 		
-		$client_id = $this->getClientId();
+		$client_id = static::config($appname, 'client_id');
 		
-		$scope = $this->getScope();
-		
-		$state = $this->nonce->createAndSave();
+		$scope = static::config($appname, 'scope');
 		
 		//get the URL
-		$url = sprintf(static::URL_AUTHORIZE, $shop, $client_id, $scope, $state, $redirect);
+		$url = sprintf(static::URL_AUTHORIZE, $shop, $client_id, $scope, $nonce, $redirect);
 		
 		return $url;
 	}
@@ -58,21 +45,6 @@ class Helpers
 		return sprintf(static::URL_FOR_TOKEN, $domain);
 	}
 	
-	
-	public function getScope()
-	{
-		return $this->getAppConfig('scope');
-	}
-	
-	public function getClientId()
-	{
-		return $this->getAppConfig('client_id');
-	}
-	
-	public function getClientSecret()
-	{
-		return $this->getAppConfig('client_secret');
-	}
 	
 	public function getReturnUrl(ShopifyApp $app)
 	{
@@ -87,15 +59,6 @@ class Helpers
                 return $app->app_launch_url;
                 break;
         }
-	}
-	
-	protected function getAppConfig($key)
-	{
-		if($this->appname === null) {
-			throw new \Exception('Appname is not defined on ' . __CLASS__);
-		}
-		
-		return $this->config[$this->appname][$key];
 	}
 	
 	/**

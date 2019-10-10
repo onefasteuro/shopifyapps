@@ -20,19 +20,17 @@ class AuthController extends \Illuminate\Routing\Controller
 	protected $nonce;
 	protected $client;
 	protected $events;
-	protected $helper;
 	
-	public function __construct(Nonce $nonce, GraphClient $client, EventBus $events, Helpers $helper)
+	public function __construct(Nonce $nonce, GraphClient $client, EventBus $events)
 	{
 		$this->client = $client;
 		$this->nonce = $nonce;
 		$this->events = $events;
-		$this->helper = $helper;
 	}
 	
 	protected function view($view, array $data = [])
 	{
-		return view('shopifyauth::' . $view, $data);
+		return view('shopifyapps::' . $view, $data);
 	}
 
     /**
@@ -42,12 +40,19 @@ class AuthController extends \Illuminate\Routing\Controller
      * @param $shop
      * @return mixed
      */
-	public function getBegin(Request $request, $appname, $shop)
+	public function redirectToAuth(Request $request, $appname, $shop)
 	{
-		$url = $this->helper->setAppName($appname)->getShopAuthUrl($shop);
+		$url = Helpers::getShopAuthUrl($appname, $shop, $this->nonce->retrieve());
+		
 		return redirect($url);
 	}
 
+	
+	public function getAuthUrl(Request $request, $appname, $shop)
+	{
+		$url = Helpers::getShopAuthUrl($appname, $shop, $this->nonce->retrieve());
+		return $url;
+	}
 
     public function getAuth(Request $request, $appname)
     {

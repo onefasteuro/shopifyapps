@@ -9,7 +9,6 @@ class AuthMiddleware extends NonceMiddleware
 	public function handle($request, \Closure $next)
 	{
 		parent::setNonceStore($request);
-		parent::setHelpersAppName($request);
 		
 		//check if the nonce matches
 		if(!$this->assertNonce($request)) {
