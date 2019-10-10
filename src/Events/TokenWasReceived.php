@@ -1,6 +1,6 @@
 <?php
 
-namespace onefasteuro\ShopifyAuth\Events;
+namespace onefasteuro\ShopifyApps\Events;
 
 
 class TokenWasReceived

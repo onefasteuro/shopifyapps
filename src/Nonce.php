@@ -1,6 +1,6 @@
 <?php
 
-namespace onefasteuro\ShopifyAuth;
+namespace onefasteuro\ShopifyApps;
 
 use Illuminate\Support\Facades\Session;
 use Illuminate\Session\Store;

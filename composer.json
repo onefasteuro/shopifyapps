@@ -1,6 +1,6 @@
 {
-    "name": "onefasteuro/shopifyauth",
-    "description": "Authentication with the Shopify API",
+    "name": "onefasteuro/shopifyapps",
+    "description": "Authentication & Billing with the Shopify API",
     "license": "MIT",
     "authors": [
         {
@@ -9,8 +9,8 @@
             "homepage": "https://driftfreediving.com"
         }
     ],
-    "homepage": "https://github.com/onefasteuro/shopifyauth",
-    "keywords": ["Laravel", "Shopify"],
+    "homepage": "https://github.com/onefasteuro/shopifyapps",
+    "keywords": ["Laravel", "Shopify", "OAuth", "Billing"],
     "require": {
         "ext-json": "*",
         "illuminate/support": "^6.0",
@@ -26,18 +26,18 @@
     },
     "autoload": {
         "psr-4": {
-            "onefasteuro\\ShopifyAuth\\": "src/"
+            "onefasteuro\\ShopifyApps\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "onefasteuro\\ShopifyAuth\\Tests\\": "tests/"
+            "onefasteuro\\ShopifyApps\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "onefasteuro\\ShopifyAuth\\ShopifyAuthServiceProvider"
+                "onefasteuro\\ShopifyApps\\ServiceProvider"
             ]
         }
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace onefasteuro\ShopifyAuth\Http;
+namespace onefasteuro\ShopifyApps\Http;
 
 
 class NonceMiddleware
@@ -9,7 +9,7 @@ class NonceMiddleware
 	protected $nonce;
 	protected $helpers;
 	
-	public function __construct(\onefasteuro\ShopifyAuth\Nonce $n, \onefasteuro\ShopifyAuth\Helpers $h)
+	public function __construct(\onefasteuro\ShopifyApps\Nonce $n, \onefasteuro\ShopifyApps\Helpers $h)
 	{
 		$this->helpers = $h;
 		$this->nonce = $n;

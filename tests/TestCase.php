@@ -1,9 +1,9 @@
 <?php
 
-namespace onefasteuro\ShopifyAuth\Tests;
+namespace onefasteuro\ShopifyApps\Tests;
 
 use onefasteuro\Shopify\ShopifyServiceProvider;
-use onefasteuro\ShopifyAuth\ShopifyAuthServiceProvider;
+use onefasteuro\ShopifyApps\ServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use PDO;
 	
@@ -12,7 +12,7 @@ class TestCase extends BaseTestCase
 		
 	protected function getPackageProviders($app)
 	{
-		return [ShopifyAuthServiceProvider::class];
+		return [ServiceProvider::class];
 	}
 
 

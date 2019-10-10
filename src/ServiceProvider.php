@@ -1,16 +1,19 @@
 <?php
 
-namespace onefasteuro\ShopifyAuth;
+namespace onefasteuro\ShopifyApps;
 
 
-use Illuminate\Support\ServiceProvider;
-use onefasteuro\ShopifyAuth\Http\AuthMiddleware;
-use onefasteuro\ShopifyAuth\Http\NonceMiddleware;
-use onefasteuro\ShopifyAuth\Http\Controllers\AuthController;
+use Illuminate\Support\ServiceProvider as BaseProvider;
+use onefasteuro\ShopifyApps\Http\AuthMiddleware;
+use onefasteuro\ShopifyApps\Http\NonceMiddleware;
+use onefasteuro\ShopifyApps\Http\Controllers\AuthController;
 use Illuminate\Contracts\Events\Dispatcher as EventBus;
 use Illuminate\Support\Facades\Event;
 
-class ShopifyAuthServiceProvider extends ServiceProvider
+
+use onefasteuro\ShopifyApps\Http\Controllers\BillingController;
+
+class ServiceProvider extends BaseProvider
 {
     /**
      * Perform post-registration booting of services.
@@ -30,12 +33,27 @@ class ShopifyAuthServiceProvider extends ServiceProvider
         
         $this->loadViewsFrom(__DIR__ . '/../views', 'shopifyauth');
         
-		$this->bootEvents();
+		$this->loadEvents();
+		
+		$this->loadBillingProviders();
     }
+	
+	protected function loadBillingProviders()
+	{
+		
+		$providers = $this->app['config']->get('shopifybilling');
+		
+		foreach($providers as $app_name => $p) {
+			$c = $p['provider'];
+			$provider = new $c($this->app[EventBus::class], $this->app[GraphClient::class], $p);
+			
+			$this->app[BillingRegistry::class]->register($app_name, $provider);
+		}
+	}
 
 
 
-	protected function bootEvents()
+	protected function loadEvents()
 	{
 		//event if needed
 		Event::listen(Events\TokenWasReceived::class, function(Events\TokenWasReceived $event){
@@ -63,7 +81,7 @@ class ShopifyAuthServiceProvider extends ServiceProvider
      */
     public function register()
     {
-	    $this->mergeConfigFrom(__DIR__ . '/../config/shopifyauth.php', 'shopifyauth');
+	    $this->mergeConfigFrom(__DIR__ . '/../config/shopifyapps.php', 'shopifyapps');
 	    
         $this->app->singleton(Nonce::class, function($app){
         	return new Nonce;
@@ -82,9 +100,18 @@ class ShopifyAuthServiceProvider extends ServiceProvider
 	    });
 	    
 	    $this->app->singleton(Helpers::class, function($app){
-	    	return new Helpers($app['config']->get('shopifyauth'), $app[Nonce::class]);
+	    	return new Helpers($app['config']->get('shopifyapps'), $app[Nonce::class]);
 	    });
 	    
+	    
+	    //billing
+	    $this->app->singleton(BillingRegistry::class, function($app){
+		    return new BillingRegistry;
+	    });
+	
+	    $this->app->singleton(BillingController::class, function($app) {
+		    return new BillingController($app[EventBus::class], $app[BillingRegistry::class]);
+	    });
     }
     
 
@@ -95,7 +122,7 @@ class ShopifyAuthServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return ['shopifyauth'];
+        return ['shopifyapps'];
     }
 
     /**
@@ -107,8 +134,8 @@ class ShopifyAuthServiceProvider extends ServiceProvider
     {
         // Publishing the configuration file.
         $this->publishes([
-            __DIR__ . '/../config/shopifyauth.php' => config_path('shopifyauth.php'),
-        ], 'shopifyauth.config');
+            __DIR__ . '/../config/shopifyapps.php' => config_path('shopifyapps.php'),
+        ], 'shopifyapps.config');
 	
 	    $this->commands([
 

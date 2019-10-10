@@ -1,8 +1,8 @@
 <?php
 	
-namespace onefasteuro\ShopifyAuth\Tests;
+namespace onefasteuro\ShopifyApps\Tests;
 
-use onefasteuro\ShopifyAuth\Models\ShopifyApp;
+use onefasteuro\ShopifyApps\Models\ShopifyApp;
 
 class HttpTest extends TestCase
 {

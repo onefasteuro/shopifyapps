@@ -1,1 +1,1 @@
-C:37:"PHPUnit\Runner\DefaultTestResultCache":206:{a:2:{s:7:"defects";a:2:{s:7:"Warning";i:6;s:47:"onefasteuro\ShopifyAuth\Tests\HttpTest::testGid";i:6;}s:5:"times";a:2:{s:7:"Warning";d:0.011;s:47:"onefasteuro\ShopifyAuth\Tests\HttpTest::testGid";d:0.044;}}}
+C:37:"PHPUnit\Runner\DefaultTestResultCache":206:{a:2:{s:7:"defects";a:2:{s:7:"Warning";i:6;s:47:"onefasteuro\ShopifyApps\Tests\HttpTest::testGid";i:6;}s:5:"times";a:2:{s:7:"Warning";d:0.011;s:47:"onefasteuro\ShopifyApps\Tests\HttpTest::testGid";d:0.044;}}}

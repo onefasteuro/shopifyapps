@@ -1,11 +1,11 @@
 <?php
 
-namespace onefasteuro\ShopifyAuth;
+namespace onefasteuro\ShopifyApps;
 
 
 
 
-use onefasteuro\ShopifyAuth\Models\ShopifyApp;
+use onefasteuro\ShopifyApps\Models\ShopifyApp;
 
 class Helpers
 {

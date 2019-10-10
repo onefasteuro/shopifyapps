@@ -1,19 +1,19 @@
 <?php
 
-namespace onefasteuro\ShopifyAuth\Http\Controllers;
+namespace onefasteuro\ShopifyApps\Http\Controllers;
 
 
 use Illuminate\Http\Request;
-use onefasteuro\ShopifyAuth\Events\AppWasCreated;
-use onefasteuro\ShopifyAuth\Events\AppWasSaved;
-use onefasteuro\ShopifyAuth\Helpers;
-use onefasteuro\ShopifyAuth\Models\ShopifyApp;
+use onefasteuro\ShopifyApps\Events\AppWasCreated;
+use onefasteuro\ShopifyApps\Events\AppWasSaved;
+use onefasteuro\ShopifyApps\Helpers;
+use onefasteuro\ShopifyApps\Models\ShopifyApp;
 use Requests;
 
 //constructor
 use Illuminate\Contracts\Events\Dispatcher as EventBus;
 use onefasteuro\ShopifyClient\GraphClient;
-use onefasteuro\ShopifyAuth\Nonce;
+use onefasteuro\ShopifyApps\Nonce;
 
 class AuthController extends \Illuminate\Routing\Controller
 {
@@ -72,7 +72,7 @@ class AuthController extends \Illuminate\Routing\Controller
 			$oauth = json_decode($response->body, true);
 			
 			//event, we have a token, do we need it anywhere else?
-			$this->events->dispatch(new \onefasteuro\ShopifyAuth\Events\TokenWasReceived($oauth['access_token']));
+			$this->events->dispatch(new \onefasteuro\ShopifyApps\Events\TokenWasReceived($oauth['access_token']));
 
 			//get the graphql details for this app
             $gql = $this->getGraphDetails($shopdomain, $oauth['access_token']);

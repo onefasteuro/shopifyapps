@@ -1,10 +1,10 @@
 <?php
 
-namespace onefasteuro\ShopifyAuth\Models;
+namespace onefasteuro\ShopifyApps\Models;
 
 
 use Illuminate\Database\Eloquent\Model as BaseModel;
-use onefasteuro\ShopifyAuth\Helpers;
+use onefasteuro\ShopifyApps\Helpers;
 
 class ShopifyApp extends BaseModel
 {
@@ -24,6 +24,16 @@ class ShopifyApp extends BaseModel
 	    $id = Helpers::gidParse($gid);
 
 		return static::where('app_installation_id', '=', $id)->first();
+	}
+	
+	public function bill()
+	{
+		return $this->hasOne(ShopifyBilling::class, 'app_id','id')->withDefault();
+	}
+	
+	public static function findWithBilling($id)
+	{
+		return static::with('bill')->find($id);
 	}
 	
 	public function setShopIdAttribute($value)

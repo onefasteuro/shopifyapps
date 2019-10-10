@@ -1,14 +1,14 @@
 <?php
 
-namespace onefasteuro\ShopifyAuth\Http\Controllers;
+namespace onefasteuro\ShopifyApps\Http\Controllers;
 
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 //models
-use onefasteuro\ShopifyAuth\ShopifyApp;
-use onefasteuro\ShopifyAuth\ShopifyBilling;
+use onefasteuro\ShopifyApps\ShopifyApp;
+use onefasteuro\ShopifyApps\ShopifyBilling;
 
 class RedactController extends Controller
 {

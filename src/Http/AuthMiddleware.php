@@ -1,6 +1,6 @@
 <?php
 
-namespace onefasteuro\ShopifyAuth\Http;
+namespace onefasteuro\ShopifyApps\Http;
 
 
 class AuthMiddleware extends NonceMiddleware
