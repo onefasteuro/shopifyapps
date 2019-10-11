@@ -9,9 +9,14 @@ use onefasteuro\ShopifyClient\GraphClient;
 
 class RecurringBilling implements BillingContract
 {
+    public function appName()
+    {
+        return 'test-app';
+    }
+
     public static function name()
     {
-        return 'GP Bridge sync';
+        return 'App Bill Description';
     }
 	
 	public static function testCharge()
@@ -27,7 +32,7 @@ class RecurringBilling implements BillingContract
 	public static function authorizeCharge(GraphClient $client, $return_url)
 	{
 		$call =  'mutation($trial: Int, $test: Boolean, $name: String!, $return: URL!) {
-			  appSubscriptionCreate(
+			  bill: appSubscriptionCreate(
 			    test: $test
 			    name: $name
 			    trialDays: $trial

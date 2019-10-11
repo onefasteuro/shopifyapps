@@ -4,9 +4,8 @@ namespace onefasteuro\ShopifyApps\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use onefasteuro\ShopifyApps\Helpers;
-use onefasteuro\ShopifyApps\Contracts\ModelContract;
 
-class ShopifyBilling extends Model implements ModelContract
+class ShopifyBilling extends Model
 {
 	protected $table = 'shopify_billings';
 	

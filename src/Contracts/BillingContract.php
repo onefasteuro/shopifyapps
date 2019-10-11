@@ -9,8 +9,14 @@ interface BillingContract
 {
 	
 	public static function authorizeCharge(GraphClient $client, $return_url);
-	
-	public static function testCharge();
-	
-	public static function trialDuration();
+
+    public function appName();
+
+    public static function name();
+
+    public static function testCharge();
+
+    public static function trialDuration();
+
+
 }

@@ -91,6 +91,8 @@ class ShopifyApp extends BaseModel implements \onefasteuro\ShopifyApps\Contracts
     {
         $this->bill->purchase_id = $id;
         $this->bill->save();
+
+        return $this;
     }
 }
 

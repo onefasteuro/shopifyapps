@@ -52,7 +52,9 @@ class HttpTest extends TestCase
 	{
 		$route = route('shopify.billing.redirect', ['appname' => $this->fake_app->app_name, 'id' => 1]);
 		$response = $this->get($route);
-		
+
+		dd($response);
+
 		$response->assertStatus(302);
 	}
 	
