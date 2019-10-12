@@ -4,44 +4,46 @@ namespace onefasteuro\ShopifyApps\Auth;
 
 use Illuminate\Support\Arr;
 use onefasteuro\ShopifyApps\Nonce;
-use onefasteuro\ShopifyUtils\ShopifyUtils;
+use Illuminate\Http\Request;
 
 class ShopifyVerifyOAuthRequest
 {
+    protected $config = [];
+    protected $nonce;
 
-    public function __construct(array $config)
+    public function __construct(array $config, Nonce $nonce)
     {
+        $this->config = $config;
+        $this->nonce = $nonce;
     }
 
-    public function verify()
+    public function verify(Request $request)
     {
-        $this->assertDomain();
-        $this->assertHMAC();
-        $this->assertNonce();
+        $this->assertDomain($request);
+        $this->assertHMAC($request);
+        $this->assertNonce($request);
     }
 
-    public function assertNonce(Nonce $nonce, $request_nonce)
+    protected function assertNonce(\Illuminate\Http\Request $request)
     {
-        $nonce = $nonce->retrieve();
+        $nonce = $this->nonce->retrieve();
 
         //nonce do not match, error out
-        return $nonce === $request_nonce;
+        return $nonce === $request->query('state');
+    }
+
+    protected function assertDomain(\Illuminate\Http\Request $request)
+    {
+        $domain = $request->get('shop');
+
+        return preg_match('/[a-zA-Z0-9\-]+\.myshopify\.com/', $domain);
     }
 
 
-    /**
-     * Assert the Shop Domain
-     * @param $shop_domain
-     * @return bool
-     */
-    public function assertDomain($shop_domain)
+    protected function assertHMAC(\Illuminate\Http\Request $request)
     {
-        return preg_match('/[a-zA-Z0-9\-]+\.myshopify\.com/', $shop_domain) ? true : false;
-    }
+        $query = $request->query();
 
-
-    public function assertHMAC(array $query)
-    {
         $hmac = $query['hmac'];
         if(array_key_exists('hmac', $query) ) {
             unset($query['hmac']);
@@ -57,7 +59,8 @@ class ShopifyVerifyOAuthRequest
 
         $data = urldecode(http_build_query($query));
 
-        //$secret = client secret
+
+        $secret = Arr::get($this->config, 'appname.client_secret');
 
         $calc = hash_hmac('sha256', $data, $secret);
 
