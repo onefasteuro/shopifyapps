@@ -5,9 +5,15 @@ namespace onefasteuro\ShopifyApps\Http;
 
 class NonceMiddleware
 {
-	
+
 	protected $nonce;
-	
+
+
+    /**
+     * Instance of our Nonce set the storage to the session
+     * NonceMiddleware constructor.
+     * @param \onefasteuro\ShopifyApps\Nonce $n
+     */
 	public function __construct(\onefasteuro\ShopifyApps\Nonce $n)
 	{
 		$this->nonce = $n;

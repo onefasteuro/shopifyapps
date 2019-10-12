@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "91bb29716189c71cb5e35afeb295c21b",
+    "content-hash": "5b43451b321cf527a5b245707220e765",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -677,19 +677,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyclient.git",
-                "reference": "aa4bde17741e4c6f109642b38a40e323b0cba87f"
+                "reference": "e3fef435f9f06e025870787d34fa1c4ea639d574"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/aa4bde17741e4c6f109642b38a40e323b0cba87f",
-                "reference": "aa4bde17741e4c6f109642b38a40e323b0cba87f",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/e3fef435f9f06e025870787d34fa1c4ea639d574",
+                "reference": "e3fef435f9f06e025870787d34fa1c4ea639d574",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "illuminate/config": "^6.0",
-                "illuminate/support": "^6.0",
-                "rmccue/requests": "^1.7"
+                "illuminate/support": "^6.0"
             },
             "require-dev": {
                 "mockery/mockery": "^1.1",
@@ -728,7 +727,55 @@
                 "laravel",
                 "shopify"
             ],
-            "time": "2019-10-11T11:31:13+00:00"
+            "time": "2019-10-11T20:17:06+00:00"
+        },
+        {
+            "name": "onefasteuro/shopifyutils",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/onefasteuro/shopifyutils.git",
+                "reference": "2f229682b3465e408cc24e5c329551f8bf6aa011"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/2f229682b3465e408cc24e5c329551f8bf6aa011",
+                "reference": "2f229682b3465e408cc24e5c329551f8bf6aa011",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/support": "^6.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.1",
+                "orchestra/testbench": "^4.0",
+                "phpunit/phpunit": "^8.0",
+                "sempro/phpunit-pretty-print": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "onefasteuro\\ShopifyUtils\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Haroun",
+                    "email": "onefasteuro@gmail.com",
+                    "homepage": "https://driftfreediving.com"
+                }
+            ],
+            "description": "Utils for shopify parsing etc..",
+            "homepage": "https://github.com/onefasteuro/shopifyutils",
+            "keywords": [
+                "shopify"
+            ],
+            "time": "2019-10-11T23:09:07+00:00"
         },
         {
             "name": "opis/closure",
@@ -4414,7 +4461,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "onefasteuro/shopifyclient": 20
+        "onefasteuro/shopifyclient": 20,
+        "onefasteuro/shopifyutils": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

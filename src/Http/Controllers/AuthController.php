@@ -8,6 +8,7 @@ use onefasteuro\ShopifyApps\Events\AppWasCreated;
 use onefasteuro\ShopifyApps\Events\AppWasSaved;
 use onefasteuro\ShopifyApps\Helpers;
 use onefasteuro\ShopifyApps\Models\ShopifyApp;
+use onefasteuro\ShopifyApps\Auth\ShopifyAuthService;
 use Requests;
 
 //constructor
@@ -20,12 +21,16 @@ class AuthController extends \Illuminate\Routing\Controller
 	protected $nonce;
 	protected $client;
 	protected $events;
+
+	protected $service;
 	
-	public function __construct(Nonce $nonce, GraphClient $client, EventBus $events)
+	public function __construct(Nonce $nonce, GraphClient $client, EventBus $events, ShopifyAuthService $service)
 	{
 		$this->client = $client;
 		$this->nonce = $nonce;
 		$this->events = $events;
+
+		$this->service = $service;
 	}
 	
 	protected function view($view, array $data = [])
@@ -42,6 +47,8 @@ class AuthController extends \Illuminate\Routing\Controller
      */
 	public function redirectToAuth(Request $request, $appname, $shop)
 	{
+        $url = $this->service->setShopifyApp($appname)->setShopifyDomain($shop);
+
 		$url = Helpers::getShopAuthUrl($appname, $shop, $this->nonce->retrieve());
 		
 		return redirect($url);

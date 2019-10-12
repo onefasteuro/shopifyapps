@@ -4,6 +4,8 @@ namespace onefasteuro\ShopifyApps;
 
 
 use Illuminate\Support\ServiceProvider as BaseProvider;
+use onefasteuro\ShopifyApps\Auth\ShopifyAuthService;
+use onefasteuro\ShopifyApps\Auth\ShopifyVerifyOAuthRequest;
 use onefasteuro\ShopifyApps\Http\AuthMiddleware;
 use onefasteuro\ShopifyApps\Http\NonceMiddleware;
 use onefasteuro\ShopifyApps\Http\Controllers\AuthController;
@@ -83,15 +85,35 @@ class ServiceProvider extends BaseProvider
 	    });
 	
 	    $this->app->singleton(AuthController::class, function($app){
-		    return new AuthController( $app[Nonce::class], $app[\onefasteuro\ShopifyClient\GraphClient::class], $app[EventBus::class]);
+		    return new AuthController( $app[Nonce::class], $app[\onefasteuro\ShopifyClient\GraphClient::class], $app[EventBus::class], $app[ShopifyAuthService::class]);
 	    });
 
 	
 	    $this->app->singleton(BillingController::class, function($app) {
 		    return new BillingController($app[Nonce::class], $app[\onefasteuro\ShopifyClient\GraphClient::class], $app[EventBus::class]);
 	    });
+
+	    $this->registerAuthNamespace();
+
     }
-    
+
+
+    protected function registerAuthNamespace()
+    {
+        $this->app->singleton(ShopifyAuthService::class, function($app){
+
+            $config = $app['config']->get('shopifyapps');
+
+            return new ShopifyAuthService($app[Nonce::class], $config);
+        });
+
+        $this->app->singleton(ShopifyVerifyOAuthRequest::class, function($app) {
+            $config = $app['config']->get('shopifyapps');
+            return new ShopifyVerifyOAuthRequest($config);
+        });
+    }
+
+
 
     /**
      * Get the services provided by the provider.
