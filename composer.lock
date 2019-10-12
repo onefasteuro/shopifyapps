@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5b43451b321cf527a5b245707220e765",
+    "content-hash": "4b605435cac6d265db4d56313dbe2c17",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -735,12 +735,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyutils.git",
-                "reference": "2f229682b3465e408cc24e5c329551f8bf6aa011"
+                "reference": "834bced1ecea986f2e7997b3a83c0e46f3689cb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/2f229682b3465e408cc24e5c329551f8bf6aa011",
-                "reference": "2f229682b3465e408cc24e5c329551f8bf6aa011",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/834bced1ecea986f2e7997b3a83c0e46f3689cb5",
+                "reference": "834bced1ecea986f2e7997b3a83c0e46f3689cb5",
                 "shasum": ""
             },
             "require": {
@@ -775,7 +775,7 @@
             "keywords": [
                 "shopify"
             ],
-            "time": "2019-10-11T23:09:07+00:00"
+            "time": "2019-10-12T00:13:14+00:00"
         },
         {
             "name": "opis/closure",

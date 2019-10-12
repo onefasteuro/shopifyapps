@@ -6,17 +6,18 @@ namespace onefasteuro\ShopifyApps;
 use Illuminate\Support\ServiceProvider as BaseProvider;
 use onefasteuro\ShopifyApps\Auth\ShopifyAuthService;
 use onefasteuro\ShopifyApps\Auth\ShopifyVerifyOAuthRequest;
+use onefasteuro\ShopifyApps\Http\SetupMiddleware;
 use onefasteuro\ShopifyApps\Http\AuthMiddleware;
-use onefasteuro\ShopifyApps\Http\NonceMiddleware;
+use onefasteuro\ShopifyApps\Http\SaveNonceMiddleware;
 use onefasteuro\ShopifyApps\Http\Controllers\AuthController;
-use Illuminate\Contracts\Events\Dispatcher as EventBus;
+use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
 
 use onefasteuro\ShopifyApps\Contracts\BillingContract;
 
 use onefasteuro\ShopifyApps\Http\Controllers\BillingController;
 use onefasteuro\ShopifyClient\GraphClient;
 
-class ServiceProvider extends BaseProvider
+class ShopifyAppsServiceProvider extends BaseProvider
 {
     /**
      * Perform post-registration booting of services.
@@ -58,6 +59,10 @@ class ServiceProvider extends BaseProvider
 		$events->listen(Events\AppWasSaved::class, function(Events\AppWasSaved $event){
             $model = $event->model;
         });
+
+		$events->listen('router.matched', function($route, $request){
+		   dd($route);
+        });
 	}
 
 
@@ -75,41 +80,49 @@ class ServiceProvider extends BaseProvider
         $this->app->singleton(Nonce::class, function($app){
         	return new Nonce;
         });
-        
-        $this->app->singleton(AuthMiddleware::class,function($app){
-        	return new AuthMiddleware($app[Nonce::class]);
-        });
-	
-	    $this->app->singleton(NonceMiddleware::class,function($app){
-		    return new NonceMiddleware($app[Nonce::class]);
-	    });
-	
+
 	    $this->app->singleton(AuthController::class, function($app){
-		    return new AuthController( $app[Nonce::class], $app[\onefasteuro\ShopifyClient\GraphClient::class], $app[EventBus::class], $app[ShopifyAuthService::class]);
+		    return new AuthController( $app[ShopifyAuthService::class] );
 	    });
 
-	
-	    $this->app->singleton(BillingController::class, function($app) {
-		    return new BillingController($app[Nonce::class], $app[\onefasteuro\ShopifyClient\GraphClient::class], $app[EventBus::class]);
-	    });
+	    $this->registerMiddleware();
+
 
 	    $this->registerAuthNamespace();
 
     }
 
 
+    protected function registerMiddleware()
+    {
+        $this->app->singleton(AuthMiddleware::class,function($app){
+            return new AuthMiddleware($app[Nonce::class]);
+        });
+
+        $this->app->singleton(SetupMiddleware::class, function($app){
+            return new SetupMiddleware($app['config'], $app[Nonce::class]);
+        });
+
+        $this->app->singleton(SaveNonceMiddleware::class,function($app){
+            return new SaveNonceMiddleware($app[Nonce::class]);
+        });
+    }
+
+
+
     protected function registerAuthNamespace()
     {
         $this->app->singleton(ShopifyAuthService::class, function($app){
-
-            $config = $app['config']->get('shopifyapps');
-
-            return new ShopifyAuthService($app[Nonce::class], $config);
+            return new ShopifyAuthService(
+                $app[Nonce::class],
+                $app[GraphClient::class],
+                $app[EventsDispatcher::class],
+                $app['config']);
         });
 
         $this->app->singleton(ShopifyVerifyOAuthRequest::class, function($app) {
             $config = $app['config']->get('shopifyapps');
-            return new ShopifyVerifyOAuthRequest($config);
+            return new ShopifyVerifyOAuthRequest($config, $app[Nonce::class]);
         });
     }
 

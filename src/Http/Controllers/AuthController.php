@@ -18,18 +18,10 @@ use onefasteuro\ShopifyApps\Nonce;
 
 class AuthController extends \Illuminate\Routing\Controller
 {
-	protected $nonce;
-	protected $client;
-	protected $events;
-
 	protected $service;
 	
-	public function __construct(Nonce $nonce, GraphClient $client, EventBus $events, ShopifyAuthService $service)
+	public function __construct(ShopifyAuthService $service)
 	{
-		$this->client = $client;
-		$this->nonce = $nonce;
-		$this->events = $events;
-
 		$this->service = $service;
 	}
 	
@@ -47,17 +39,16 @@ class AuthController extends \Illuminate\Routing\Controller
      */
 	public function redirectToAuth(Request $request, $appname, $shop)
 	{
-        $url = $this->service->setShopifyApp($appname)->setShopifyDomain($shop);
+        $this->service->setShopifyDomain($shop);
 
-		$url = Helpers::getShopAuthUrl($appname, $shop, $this->nonce->retrieve());
-		
-		return redirect($url);
+
+
 	}
 
 	
 	public function getAuthUrl(Request $request, $appname, $shop)
 	{
-		$url = Helpers::getShopAuthUrl($appname, $shop, $this->nonce->retrieve());
+		$url = '';
 		return $url;
 	}
 

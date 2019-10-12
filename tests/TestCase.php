@@ -3,7 +3,7 @@
 namespace onefasteuro\ShopifyApps\Tests;
 
 
-use onefasteuro\ShopifyApps\ServiceProvider;
+use onefasteuro\ShopifyApps\ShopifyAppsServiceProvider;
 use onefasteuro\ShopifyClient\ShopifyClientServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use onefasteuro\ShopifyApps\Models\ShopifyApp;
@@ -36,7 +36,7 @@ class TestCase extends BaseTestCase
 		
 	protected function getPackageProviders($app)
 	{
-		return [ServiceProvider::class, ShopifyClientServiceProvider::class];
+		return [ShopifyAppsServiceProvider::class, ShopifyClientServiceProvider::class];
 	}
 	
 	

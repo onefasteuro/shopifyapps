@@ -3,9 +3,8 @@
 namespace onefasteuro\ShopifyApps\Http;
 
 
-class NonceMiddleware
+class SaveNonceMiddleware
 {
-
 	protected $nonce;
 
 
@@ -21,20 +20,7 @@ class NonceMiddleware
 	
 	public function handle($request, \Closure $next)
 	{
-		$this->setNonceStore($request);
-		
+        $this->nonce->createAndSave();
 		return $next($request);
-	}
-	
-	
-	public function setNonceStore($request)
-	{
-		$this->nonce->setStore($request->session());
-		
-		//create and save the nonce
-		if($request->route()->getName() === 'shopify.auth.url' or
-			$request->route()->getName() === 'shopify.auth.redirect') {
-			$this->nonce->createAndSave();
-		}
 	}
 }

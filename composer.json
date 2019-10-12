@@ -15,7 +15,7 @@
         "ext-json": "*",
         "illuminate/support": "^6.0",
         "illuminate/config": "^6.0",
-        "illuminate/request": "^6.0",
+        "illuminate/http": "^6.0",
         "rmccue/requests": "^1.7",
         "illuminate/events": "^6.0",
         "onefasteuro/shopifyclient": "dev-master",
@@ -40,7 +40,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "onefasteuro\\ShopifyApps\\ServiceProvider"
+                "onefasteuro\\ShopifyApps\\ShopifyAppsServiceProvider"
             ]
         }
     }
