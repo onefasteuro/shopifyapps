@@ -2,8 +2,6 @@
 
 return [
 	
-	
-	
 	'test-app' => [
             'client_id' => 'test-client_id',
             'client_secret' => 'test-client_secret',

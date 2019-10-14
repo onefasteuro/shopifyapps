@@ -43,13 +43,15 @@ class AuthController extends \Illuminate\Routing\Controller
      */
 	public function redirectToAuth(Request $request, $shopify_app_name, $shop)
 	{
-		$config = config('shopifyapps.'.$shopify_app_name);
+		$config = config('shopifyapps.'.$shopify_app_name, []);
 		
-		$this->service->setShopifyAppConfig($config);
-        $this->service->setShopifyDomain($shop);
+		$this->service->setShopifyApp($shopify_app_name)
+			->setShopifyAppConfig($config)
+			->setShopifyDomain($shop);
 
-
-
+		$redirect = $this->service->getOAuthUrl();
+		
+		return redirect()->to($redirect);
 	}
 
 	

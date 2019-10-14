@@ -96,7 +96,7 @@ class ShopifyAppsServiceProvider extends BaseProvider
         });
 
         $this->app->singleton(SetNonceStoreMiddleware::class, function($app){
-            return new SetNonceStoreMiddleware($app['config'], $app[Nonce::class]);
+            return new SetNonceStoreMiddleware($app[Nonce::class]);
         });
 
         $this->app->singleton(SaveNonceStoreMiddleware::class,function($app){
