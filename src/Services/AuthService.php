@@ -1,18 +1,14 @@
 <?php
 
-namespace onefasteuro\ShopifyApps\Auth;
+namespace onefasteuro\ShopifyApps\Services;
 
-use Illuminate\Support\Arr;
 use onefasteuro\ShopifyApps\Exceptions\ConfigException;
-use onefasteuro\ShopifyApps\Repositories\GraphqlRepository;
-use onefasteuro\ShopifyClient\GraphClient;
 use onefasteuro\ShopifyClient\GraphResponse;
 use onefasteuro\ShopifyUtils\ShopifyUtils;
 use onefasteuro\ShopifyApps\Nonce;
 use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
-class ShopifyAuthService
+class AuthService extends BaseService
 {
 	const OAUTH_URL = 'https://%s/admin/oauth/authorize?client_id=%s&scope=%s&state=%s&redirect_uri=%s';
 	const TOKEN_URL = 'https://%s/admin/oauth/access_token';
@@ -20,11 +16,6 @@ class ShopifyAuthService
 	
     protected $nonce;
     protected $events;
-    protected $config = [];
-
-    //the active app that we draw config etc from
-    protected $shopify_app = null;
-    protected $shopify_domain;
 
 	public function __construct(Nonce $nonce, EventsDispatcher $events)
     {
@@ -32,47 +23,6 @@ class ShopifyAuthService
         $this->events = $events;
     }
     
-    public function setShopifyAppConfig(array $config)
-    {
-    	$config = $this->validateConfig($config);
-    	$this->config = $config;
-    	return $this;
-    }
-    
-    protected function validateConfig(array $config)
-    {
-    	//params we need to check
-    	$params = [
-    		'client_id',
-		    'client_secret',
-		    'return_url',
-		    'redirect_url',
-		    'scope'
-	    ];
-    	
-    	foreach($params as $key)
-	    {
-		    if(!array_key_exists($key, $config)) {
-			    throw new ConfigException('The '.$key.' key is missing from the config');
-		    }
-	    }
-	    
-    	return $config;
-    }
-
-    public function setShopifyApp($app)
-    {
-        $this->shopify_app = $app;
-        return $this;
-    }
-
-    public function setShopifyDomain($domain)
-    {
-        $this->shopify_domain = ShopifyUtils::formatDomain($domain);
-        return $this;
-    }
-
-
     /**
      * This is the URL that we redirect to for shopify to create the oauth token
      */

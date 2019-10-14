@@ -3,10 +3,10 @@
 namespace onefasteuro\ShopifyApps\Models;
 
 
-use Illuminate\Database\Eloquent\Model as BaseModel;
+use Illuminate\Database\Eloquent\Model;
 use onefasteuro\ShopifyUtils\ShopifyUtils;
 
-class ShopifyApp extends BaseModel implements \onefasteuro\ShopifyApps\Contracts\ModelContract
+class ShopifyApp extends Model
 {
 	protected $table = 'shopify_apps';
 	

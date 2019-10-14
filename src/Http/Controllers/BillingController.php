@@ -6,84 +6,35 @@ namespace onefasteuro\ShopifyApps\Http\Controllers;
 use Illuminate\Http\Request;
 
 //exceptions
-use onefasteuro\ShopifyApps\Exceptions\ModelException;
-use onefasteuro\ShopifyClient\Exceptions\NotFoundException;
-use onefasteuro\ShopifyClient\Exceptions\ErrorsFoundException;
-
-//models
-use onefasteuro\ShopifyApps\Helpers;
-use onefasteuro\ShopifyApps\Models\ShopifyApp;
+use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
+use onefasteuro\ShopifyApps\Repositories\GraphqlRepository;
+use onefasteuro\ShopifyApps\Services\BillingService;
 
 
-class BillingController extends AuthController
+class BillingController extends BaseController
 {
-
-	public function redirectToBill(Request $request, $appname, $id)
+	protected $service;
+	
+	public function __construct(BillingService $service)
 	{
-		try {
-			$model = static::getModel($appname, $id);
-			
-			//prepare our client
-			$this->client->init($model->shop_domain, $model->token);
-			
-			$provider = $model->billing_provider;
-			
-			$response = call_user_func_array([$provider, 'authorizeCharge'], [$this->client, $model->launch_url]);
-
-			$authorize_url = $response->parsed('data')['bill']['confirmationUrl'];
-
-			//sends back to shopify so merchant can agree to not to the terms of the plan
-			return redirect()->to($authorize_url);
-		}
-		catch(ModelException $e)
-		{
-			abort($e->getCode(), $e->getMessage());
-		}
-		catch(NotFoundException $e)
-        {
-            abort($e->getCode(), $e->getMessage());
-        }
-        catch(ErrorsFoundException $e)
-        {
-            abort($e->getCode(), $e->getMessage());
-        }
-		catch(\Exception $e) {
-            abort($e->getCode(), $e->getMessage());
-		}
+		$this->service = $service;
 	}
 	
-	
-
-	public function saveTransaction(Request $request, $appname, $id)
+	public function redirectToBill($app_installation_id)
 	{
-		try {
-			$model = static::getModel($appname, $id);
-			$this->provider->init($model);
-		}
-		catch(ModelException $e)
-		{
-			abort($e->getCode(), $e->getMessage());
-		}
+		$model = resolve(AppRepositoryInterface::class)->findByAppInstallId($app_installation_id);
 		
-		$bill = $model->getRelation('bill');
+		$params = [
+			'token' => $model->token,
+			'domain' => $model->shop_domain,
+		];
 		
-		//update the purchase status
-		$bill->purchase_completed = true;
-		$bill->charge_id = $request->get('charge_id');
-		$bill->save();
+		$config = static::getConfig($model->app_name);
 		
-		return redirect()->to($bill->return_url);
+		$this->service->setAppHandle($model->app_name)
+			->setAppConfig($config)
+			->setAppDomain($model->shop_domain);
 		
-	}
-	
-	protected static function getModel($appname, $id)
-	{
-		$model = ShopifyApp::with('bill')->where('app_name', '=', $appname)->where('id', '=', (int)$id)->first();
 		
-		if(!$model) {
-			Throw new ModelException('Could not find the application.', 400);
-		}
-		
-		return $model;
 	}
 }

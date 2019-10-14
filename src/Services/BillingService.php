@@ -1,32 +1,19 @@
 <?php
 
-namespace onefasteuro\ShopifyApps\Billing;
+namespace onefasteuro\ShopifyApps\Services;
 
-use onefasteuro\ShopifyApps\Contracts\BillingContract;
-use onefasteuro\ShopifyApps\Contracts\ModelContract;
-use onefasteuro\ShopifyApps\Helpers;
+use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
 use onefasteuro\ShopifyClient\GraphClient;
 
-class RecurringBilling implements BillingContract
+class BillingService extends BaseService implements BillingInterface
 {
-    public function appName()
-    {
-        return 'test-app';
-    }
-
-    public static function name()
-    {
-        return 'App Bill Description';
-    }
+	protected $events;
+	protected $client;
 	
-	public static function testCharge()
+	public function __construct(GraphClient $client, EventsDispatcher $events)
 	{
-		return true;
-	}
-	
-	public static function trialDuration()
-	{
-		return 0;
+		$this->events = $events;
+		$this->client = $client;
 	}
 	
 	public static function authorizeCharge(GraphClient $client, $return_url)

@@ -8,6 +8,6 @@ return [
             'scope' => 'test_scope',
             'redirect_url' => 'shopify.auth.complete',
             'return_url' => 'launch',
-            'billing' => \onefasteuro\ShopifyApps\Billing\RecurringBilling::class,
+            'billing' => \onefasteuro\ShopifyApps\Billing\BillingService::class,
 	]
 ];

@@ -1,6 +1,6 @@
 <?php
 
-namespace onefasteuro\ShopifyApps\Auth;
+namespace onefasteuro\ShopifyApps\Services;
 
 class OAuthRequestValidator
 {

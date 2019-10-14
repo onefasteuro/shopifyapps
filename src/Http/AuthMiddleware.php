@@ -3,9 +3,6 @@
 namespace onefasteuro\ShopifyApps\Http;
 
 
-
-use onefasteuro\ShopifyApps\Auth\OAuthRequestValidator;
-
 class AuthMiddleware extends SaveNonceStoreMiddleware
 {
 	
@@ -16,7 +13,7 @@ class AuthMiddleware extends SaveNonceStoreMiddleware
 		
 		$config = config('shopifyapps.'. $shopify_app);
 		
-		$validator = new OAuthRequestValidator($config, $this->nonce);
+		$validator = new \onefasteuro\ShopifyApps\Services\OAuthRequestValidator($config, $this->nonce);
 		
 		if(!$validator->assertNonce($request)){
 			return abort(403, 'Could not validate the request. State mismatch.');

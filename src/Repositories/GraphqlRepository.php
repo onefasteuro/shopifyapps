@@ -38,6 +38,5 @@ class GraphqlRepository
 			}';
 		
 		return  $this->client->query($call, []);
-		
 	}
 }

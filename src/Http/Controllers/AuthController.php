@@ -8,7 +8,7 @@ use onefasteuro\ShopifyApps\Events\AppWasCreated;
 use onefasteuro\ShopifyApps\Events\AppWasSaved;
 
 use onefasteuro\ShopifyApps\Models\ShopifyApp;
-use onefasteuro\ShopifyApps\Auth\ShopifyAuthService;
+use onefasteuro\ShopifyApps\Services\AuthService;
 
 //middleware
 use onefasteuro\ShopifyApps\Http\AuthMiddleware;
@@ -16,15 +16,15 @@ use onefasteuro\ShopifyApps\Http\SaveNonceStoreMiddleware;
 use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
 
 //repositories
-use onefasteuro\ShopifyApps\Repositories\AppRepository;
+use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
 use onefasteuro\ShopifyApps\Repositories\GraphqlRepository;
 
 
-class AuthController extends \Illuminate\Routing\Controller
+class AuthController extends BaseController
 {
 	protected $service;
 	
-	public function __construct(ShopifyAuthService $service)
+	public function __construct(AuthService $service)
 	{
 		$this->service = $service;
 		
@@ -53,9 +53,9 @@ class AuthController extends \Illuminate\Routing\Controller
 	{
 		$config = static::getConfig($shopify_app_name);
 		
-		$this->service->setShopifyApp($shopify_app_name)
-			->setShopifyAppConfig($config)
-			->setShopifyDomain($shop);
+		$this->service->setAppHandle($shopify_app_name)
+			->setAppConfig($config)
+			->setAppDomain($shop);
 
 		$redirect = $this->service->getOAuthUrl();
 		
@@ -66,10 +66,10 @@ class AuthController extends \Illuminate\Routing\Controller
     public function completeAuth(Request $request, $shopify_app_name)
     {
 	    $config = static::getConfig($shopify_app_name);
-	    
-	    $this->service->setShopifyApp($shopify_app_name)
-		    ->setShopifyAppConfig($config)
-		    ->setShopifyDomain($request->get('shop'));
+	
+	    $this->service->setAppHandle($shopify_app_name)
+		    ->setAppConfig($config)
+		    ->setAppDomain($request->get('shop'));
 	    
     	
 	    //exchange code for a token
@@ -78,11 +78,18 @@ class AuthController extends \Illuminate\Routing\Controller
 		$graph_repo = resolve(GraphqlRepository::class, ['domain' => $request->get('shop'), 'token' => $token_response->body('access_token') ]);
 		$shop_info = $graph_repo->getShopInfo();
 		
-		dd($shop_info);
+		$app_repo = resolve(AppRepositoryInterface::class);
 		
-		$app_repo = resolve(AppRepository::class);
+		$params = [
+			$shopify_app_name,
+			$token_response->body('access_token'),
+			$shop_info->body('data.app'),
+			$shop_info->body('data.shop')
+		];
 		
-		$app_repo->create($token_response->body('access_token'), $shop_info->body('data.app'), $shop_info->body('data.shop'));
+		$shopify_app = call_user_func_array([$app_repo, 'create'], $params);
+		
+		return redirect()->to($shopify_app->launch_url);
     }
 	
 	/**

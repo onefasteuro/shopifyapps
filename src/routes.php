@@ -28,22 +28,21 @@ Route::group(['middleware' => ['web']], function () use(&$namespace) {
 			'as' =>  'shopify.auth.redirect',
 			'uses' => $namespace . 'AuthController@redirectToAuth'
 		])
-		->where('shopify_app_name', '[a-z\-0-9]+')->where('shop', '[a-z\-0-9]+');
+		->where('shopify_app_name', '[a-z\-0-9]+')
+		->where('shop', '[a-z\-0-9]+');
 	
 
 	
 	
-	Route::get('shopify/billing/{appname}/{id}/complete', [
+	Route::get('shopify/billing/{id}/complete', [
 		'as' =>  'shopify.billing.complete',
 		'uses' => $namespace . 'BillingController@saveTransaction',
-	])->where('appname', '[a-z\-0-9]+')
-		->where('id', '[0-9]+');
+	])->where('app_installation_id', '[0-9]+');
 	
 	
-	Route::get('shopify/billing/{appname}/{id}', [
+	Route::get('shopify/billing/{app_installation_id}', [
 		'as' =>  'shopify.billing.redirect',
 		'uses' => $namespace . 'BillingController@redirectToBill',
-	])->where('appname', '[a-z\-0-9]+')
-		->where('id', '[0-9]+');
+	])->where('app_installation_id', '[0-9]+');
 	
 });
