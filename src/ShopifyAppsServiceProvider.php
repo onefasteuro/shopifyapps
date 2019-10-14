@@ -59,10 +59,6 @@ class ShopifyAppsServiceProvider extends BaseProvider
 		$events->listen(Events\AppWasSaved::class, function(Events\AppWasSaved $event){
             $model = $event->model;
         });
-
-		$events->listen('router.matched', function($route, $request){
-		   dd($route);
-        });
 	}
 
 
@@ -113,6 +109,18 @@ class ShopifyAppsServiceProvider extends BaseProvider
     protected function registerAuthNamespace()
     {
         $this->app->singleton(ShopifyAuthService::class, function($app){
+        	
+        	
+        	$route_name = $app['request']->route()->parameter('shopify_app_name');
+        	
+        	
+        	$config = $app['config']->get('shopifyapps.' . $route_name);
+        	
+        	//no config? throw error
+        	if(!$config) {
+	        
+	        }
+        	
             return new ShopifyAuthService(
                 $app[Nonce::class],
                 $app[GraphClient::class],

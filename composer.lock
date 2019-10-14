@@ -441,16 +441,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.55",
+            "version": "1.0.56",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "33c91155537c6dc899eacdc54a13ac6303f156e6"
+                "reference": "90e3f83cb10ef6b058d70f95267030e7a6236518"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/33c91155537c6dc899eacdc54a13ac6303f156e6",
-                "reference": "33c91155537c6dc899eacdc54a13ac6303f156e6",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/90e3f83cb10ef6b058d70f95267030e7a6236518",
+                "reference": "90e3f83cb10ef6b058d70f95267030e7a6236518",
                 "shasum": ""
             },
             "require": {
@@ -521,7 +521,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2019-08-24T11:17:19+00:00"
+            "time": "2019-10-12T13:05:59+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -677,18 +677,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyclient.git",
-                "reference": "e3fef435f9f06e025870787d34fa1c4ea639d574"
+                "reference": "dec907c3ac471603b4d612e1dce38404521ad0f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/e3fef435f9f06e025870787d34fa1c4ea639d574",
-                "reference": "e3fef435f9f06e025870787d34fa1c4ea639d574",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/dec907c3ac471603b4d612e1dce38404521ad0f1",
+                "reference": "dec907c3ac471603b4d612e1dce38404521ad0f1",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "illuminate/config": "^6.0",
-                "illuminate/support": "^6.0"
+                "illuminate/support": "^6.0",
+                "onefasteuro/shopifyutils": "dev-master"
             },
             "require-dev": {
                 "mockery/mockery": "^1.1",
@@ -724,10 +725,13 @@
             "description": "Graphql Shopify Client",
             "homepage": "https://github.com/onefasteuro/shopifyclient",
             "keywords": [
+                "api",
+                "curl",
+                "graphql",
                 "laravel",
                 "shopify"
             ],
-            "time": "2019-10-11T20:17:06+00:00"
+            "time": "2019-10-12T14:54:45+00:00"
         },
         {
             "name": "onefasteuro/shopifyutils",
@@ -735,12 +739,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyutils.git",
-                "reference": "834bced1ecea986f2e7997b3a83c0e46f3689cb5"
+                "reference": "809e76472a509dc1a98a102a0cfc9002ee33fe20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/834bced1ecea986f2e7997b3a83c0e46f3689cb5",
-                "reference": "834bced1ecea986f2e7997b3a83c0e46f3689cb5",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/809e76472a509dc1a98a102a0cfc9002ee33fe20",
+                "reference": "809e76472a509dc1a98a102a0cfc9002ee33fe20",
                 "shasum": ""
             },
             "require": {
@@ -775,7 +779,7 @@
             "keywords": [
                 "shopify"
             ],
-            "time": "2019-10-12T00:13:14+00:00"
+            "time": "2019-10-12T12:10:30+00:00"
         },
         {
             "name": "opis/closure",
