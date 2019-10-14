@@ -6,17 +6,19 @@ namespace onefasteuro\ShopifyApps\Http\Controllers;
 use Illuminate\Http\Request;
 use onefasteuro\ShopifyApps\Events\AppWasCreated;
 use onefasteuro\ShopifyApps\Events\AppWasSaved;
-use onefasteuro\ShopifyApps\Helpers;
-use onefasteuro\ShopifyApps\Http\SaveNonceStoreMiddleware;
-use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
+
 use onefasteuro\ShopifyApps\Models\ShopifyApp;
 use onefasteuro\ShopifyApps\Auth\ShopifyAuthService;
-use Requests;
 
-//constructor
-use Illuminate\Contracts\Events\Dispatcher as EventBus;
-use onefasteuro\ShopifyClient\GraphClient;
-use onefasteuro\ShopifyApps\Nonce;
+//middleware
+use onefasteuro\ShopifyApps\Http\AuthMiddleware;
+use onefasteuro\ShopifyApps\Http\SaveNonceStoreMiddleware;
+use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
+
+//repositories
+use onefasteuro\ShopifyApps\Repositories\AppRepository;
+use onefasteuro\ShopifyApps\Repositories\GraphqlRepository;
+
 
 class AuthController extends \Illuminate\Routing\Controller
 {
@@ -27,6 +29,12 @@ class AuthController extends \Illuminate\Routing\Controller
 		$this->service = $service;
 		
 		$this->middleware([SetNonceStoreMiddleware::class, SaveNonceStoreMiddleware::class])->only('redirectToAuth');
+		$this->middleware([SetNonceStoreMiddleware::class, AuthMiddleware::class])->only('completeAuth');
+	}
+	
+	protected static function getConfig($name)
+	{
+		return config('shopifyapps.'.$name, []);
 	}
 	
 	protected function view($view, array $data = [])
@@ -41,9 +49,9 @@ class AuthController extends \Illuminate\Routing\Controller
      * @param $shop
      * @return mixed
      */
-	public function redirectToAuth(Request $request, $shopify_app_name, $shop)
+	public function redirectToAuth($shopify_app_name, $shop)
 	{
-		$config = config('shopifyapps.'.$shopify_app_name, []);
+		$config = static::getConfig($shopify_app_name);
 		
 		$this->service->setShopifyApp($shopify_app_name)
 			->setShopifyAppConfig($config)
@@ -53,49 +61,28 @@ class AuthController extends \Illuminate\Routing\Controller
 		
 		return redirect()->to($redirect);
 	}
-
 	
-	public function getAuthUrl(Request $request, $appname, $shop)
-	{
-		$url = '';
-		return $url;
-	}
 
-    public function getAuth(Request $request, $appname)
+    public function completeAuth(Request $request, $shopify_app_name)
     {
-    	//params sent from shopify
-	    $shopdomain = $request->get('shop');
-    	$code = $request->get('code');
+	    $config = static::getConfig($shopify_app_name);
+	    
+	    $this->service->setShopifyApp($shopify_app_name)
+		    ->setShopifyAppConfig($config)
+		    ->setShopifyDomain($request->get('shop'));
+	    
     	
-    	$token_url = $this->helper->getOauthUrl($shopdomain);
-    	
-    	$body = [
-    		'client_id' => Helpers::config($appname, 'client_id'),
-		    'client_secret' => Helpers::config($appname, 'client_secret'),
-		    'code' => $code
-	    ];
-    	
-    	//get the response with the oauth token
-		$response = Requests::post($token_url, [], $body);
+	    //exchange code for a token
+		$token_response = $this->service->exchangeCodeForToken($request->get('code'));
 		
-		if($response->status_code == 200) {
-			$oauth = json_decode($response->body, true);
-			
-			//event, we have a token, do we need it anywhere else?
-			$this->events->dispatch(new \onefasteuro\ShopifyApps\Events\TokenWasReceived($oauth['access_token']));
-
-			//get the graphql details for this app
-            $gql = $this->getGraphDetails($shopdomain, $oauth['access_token']);
-
-			//save our token
-			$app = static::createShopifyAppInstance($gql, $oauth);
-			
-			//return to that URL
-			return redirect()->to($app->return_url);
-
-		}
-	
-	    dd('error');
+		$graph_repo = resolve(GraphqlRepository::class, ['domain' => $request->get('shop'), 'token' => $token_response->body('access_token') ]);
+		$shop_info = $graph_repo->getShopInfo();
+		
+		dd($shop_info);
+		
+		$app_repo = resolve(AppRepository::class);
+		
+		$app_repo->create($token_response->body('access_token'), $shop_info->body('data.app'), $shop_info->body('data.shop'));
     }
 	
 	/**
@@ -141,46 +128,5 @@ class AuthController extends \Illuminate\Routing\Controller
 
 	    return $app;
     }
-	
-
-
-	/**
-	 * Fetches a bit more details about this shop from Shopify
-	 * @param $token
-	 * @param $shopdomain
-	 * @return mixed
-	 */
-    protected function getGraphDetails($shopdomain, $token)
-    {
-        $this->client->init($shopdomain, $token);
-	
-	    $call = 'query {
-			  app: appInstallation {
-			    id
-			    launchUrl
-			    uninstallUrl
-			    current: app {
-			        handle
-			    }
-			  }
-			  shop {
-			    id
-			    name
-			    email
-			    domain: myshopifyDomain
-			  }
-			}';
-	
-	    $r =  $this->client->query($call, []);
-	    
-	    if(array_key_exists('data', $r)){
-	    	return $r['data'];
-	    }
-	    else {
-	    	//error? handle me
-	    }
-    }
-    
-    
 
 }

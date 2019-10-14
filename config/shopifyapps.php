@@ -2,7 +2,7 @@
 
 return [
 	
-	'test-app' => [
+	'app-handle' => [
             'client_id' => 'test-client_id',
             'client_secret' => 'test-client_secret',
             'scope' => 'test_scope',

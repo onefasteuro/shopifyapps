@@ -17,6 +17,7 @@ class CreateAuthTable extends Migration
 	        $table->bigIncrements('id');
 		    $table->bigInteger('shop_id')->index('shop_id');
 		    $table->bigInteger('app_installation_id')->index('app_installation_id');
+		    $table->bigInteger('app_id')->index('app_id');
 		    $table->string('app_name', 100)->index('app_name');
 		    $table->string('app_launch_url', 200)->nullable()->default(null);
 		    $table->string('shop_domain', 200)->index('shop_domain');

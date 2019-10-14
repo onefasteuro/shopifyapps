@@ -3,21 +3,28 @@
 namespace onefasteuro\ShopifyApps;
 
 
-use Illuminate\Support\ServiceProvider as BaseProvider;
+
 use onefasteuro\ShopifyApps\Auth\ShopifyAuthService;
-use onefasteuro\ShopifyApps\Auth\ShopifyVerifyOAuthRequest;
+use onefasteuro\ShopifyApps\Auth\OAuthRequestValidator;
+
+use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
+use onefasteuro\ShopifyClient\GraphClient;
+
+//middleware
 use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
 use onefasteuro\ShopifyApps\Http\AuthMiddleware;
 use onefasteuro\ShopifyApps\Http\SaveNonceStoreMiddleware;
+
+//repositories
+use onefasteuro\ShopifyApps\Repositories\GraphqlRepository;
+use onefasteuro\ShopifyApps\Repositories\AppRepository;
+use onefasteuro\ShopifyApps\Contracts\AppRepositoryInterface;
+
+//controllers
 use onefasteuro\ShopifyApps\Http\Controllers\AuthController;
-use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
 
-use onefasteuro\ShopifyApps\Contracts\BillingContract;
 
-use onefasteuro\ShopifyApps\Http\Controllers\BillingController;
-use onefasteuro\ShopifyClient\GraphClient;
-
-class ShopifyAppsServiceProvider extends BaseProvider
+class ShopifyAppsServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     /**
      * Perform post-registration booting of services.
@@ -80,15 +87,24 @@ class ShopifyAppsServiceProvider extends BaseProvider
 	    $this->app->singleton(AuthController::class, function($app){
 		    return new AuthController( $app[ShopifyAuthService::class] );
 	    });
-
+	
+	    $this->app->bind(GraphqlRepository::class, function($app, $params){
+		    return new GraphqlRepository(
+		    	$app[GraphClient::class],
+			    $params['domain'],
+			    $params['token']);
+	    });
+	
+	    $this->app->bind(AppRepositoryInterface::class,function($app){
+		    return new AppRepository;
+	    });
+	    
 	    $this->registerMiddleware();
-
 
 	    $this->registerAuthNamespace();
 
     }
-
-
+    
     protected function registerMiddleware()
     {
         $this->app->singleton(AuthMiddleware::class,function($app){
@@ -112,13 +128,12 @@ class ShopifyAppsServiceProvider extends BaseProvider
         	
             return new ShopifyAuthService(
                 $app[Nonce::class],
-                $app[GraphClient::class],
                 $app[EventsDispatcher::class]);
         });
 
-        $this->app->singleton(ShopifyVerifyOAuthRequest::class, function($app) {
+        $this->app->singleton(OAuthRequestValidator::class, function($app) {
             $config = $app['config']->get('shopifyapps');
-            return new ShopifyVerifyOAuthRequest($config, $app[Nonce::class]);
+            return new OAuthRequestValidator($config, $app[Nonce::class]);
         });
     }
 

@@ -4,7 +4,9 @@ namespace onefasteuro\ShopifyApps\Auth;
 
 use Illuminate\Support\Arr;
 use onefasteuro\ShopifyApps\Exceptions\ConfigException;
+use onefasteuro\ShopifyApps\Repositories\GraphqlRepository;
 use onefasteuro\ShopifyClient\GraphClient;
+use onefasteuro\ShopifyClient\GraphResponse;
 use onefasteuro\ShopifyUtils\ShopifyUtils;
 use onefasteuro\ShopifyApps\Nonce;
 use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
@@ -17,18 +19,16 @@ class ShopifyAuthService
 	
 	
     protected $nonce;
-    protected $client;
     protected $events;
     protected $config = [];
 
     //the active app that we draw config etc from
-    protected $shopify_app;
+    protected $shopify_app = null;
     protected $shopify_domain;
 
-	public function __construct(Nonce $nonce, GraphClient $client, EventsDispatcher $events)
+	public function __construct(Nonce $nonce, EventsDispatcher $events)
     {
         $this->nonce = $nonce;
-        $this->client = $client;
         $this->events = $events;
     }
     
@@ -81,7 +81,7 @@ class ShopifyAuthService
         $redirect_url = $this->config['redirect_url'];
         
         if($redirect_url === 'shopify.auth.complete') {
-        	$redirect_url = route($redirect_url, ['shopify_app_name', '=', $this->shopify_app]);
+        	$redirect_url = route($redirect_url, ['shopify_app_name' => $this->shopify_app]);
         }
         
         
@@ -94,12 +94,37 @@ class ShopifyAuthService
         return $url;
         
     }
-
-
-    public function verifyOAuthCode()
+    
+    
+    public function exchangeCodeForToken($code)
     {
-
+	    $payload = [
+		    'client_id' => $this->config['client_id'],
+		    'client_secret' => $this->config['client_secret'],
+		    'code' => $code
+	    ];
+	    
+	    $url = sprintf(static::TOKEN_URL, $this->shopify_domain);
+	    
+	    $ch = curl_init();
+	    curl_setopt($ch, CURLOPT_URL, $url);
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	    curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+	    curl_setopt($ch, CURLOPT_POST, true);
+	    curl_setopt($ch, CURLOPT_HEADER, true);
+	    curl_setopt($ch, CURLOPT_VERBOSE, false);
+	    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+	    
+	    $response = curl_exec($ch);
+	    
+	    //parse the response
+	    $token_response = ShopifyUtils::parseBody($response);
+	    $token_code = ShopifyUtils::parseStatusCode($response);
+	    $token_headers = ShopifyUtils::parseHeaders($response);
+	    
+	    curl_close($ch);
+	    
+	    return new GraphResponse($token_headers, $token_code, $token_response);
     }
-
 
 }

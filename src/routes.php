@@ -18,17 +18,9 @@ Route::group(['middleware' => ['web']], function () use(&$namespace) {
 	Route::get('shopify/auth/{shopify_app_name}/complete',
 		[
 			'as' =>  'shopify.auth.complete',
-			'uses' => $namespace . 'AuthController@handleAuth'])
+			'uses' => $namespace . 'AuthController@completeAuth'])
         ->where('ashopify_app_name', '[a-z\-0-9]+');
-
-
-	//Starts the auth process
-	Route::get('shopify/auth/{shopify_app_name}/{shop}/url',
-		[
-			'as' =>  'shopify.auth.url',
-			'uses' => $namespace . 'AuthController@getAuthUrl'
-		])
-		->where('shopify_app_name', '[a-z\-0-9]+')->where('shop', '[a-z\-0-9]+');
+	
 	
 	//Starts the auth process
 	Route::get('shopify/auth/{shopify_app_name}/{shop}',

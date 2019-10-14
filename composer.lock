@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4b605435cac6d265db4d56313dbe2c17",
+    "content-hash": "14af5aff2ad5c941fd54168b55d4b66b",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -739,12 +739,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyutils.git",
-                "reference": "809e76472a509dc1a98a102a0cfc9002ee33fe20"
+                "reference": "c5dfe47ef35f4fd7522f58e11df6a7d2ee45fcf0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/809e76472a509dc1a98a102a0cfc9002ee33fe20",
-                "reference": "809e76472a509dc1a98a102a0cfc9002ee33fe20",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/c5dfe47ef35f4fd7522f58e11df6a7d2ee45fcf0",
+                "reference": "c5dfe47ef35f4fd7522f58e11df6a7d2ee45fcf0",
                 "shasum": ""
             },
             "require": {
@@ -779,7 +779,7 @@
             "keywords": [
                 "shopify"
             ],
-            "time": "2019-10-12T12:10:30+00:00"
+            "time": "2019-10-14T15:40:34+00:00"
         },
         {
             "name": "opis/closure",
@@ -1162,55 +1162,6 @@
                 "uuid"
             ],
             "time": "2018-07-19T23:38:55+00:00"
-        },
-        {
-            "name": "rmccue/requests",
-            "version": "v1.7.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/rmccue/Requests.git",
-                "reference": "87932f52ffad70504d93f04f15690cf16a089546"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/rmccue/Requests/zipball/87932f52ffad70504d93f04f15690cf16a089546",
-                "reference": "87932f52ffad70504d93f04f15690cf16a089546",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.2"
-            },
-            "require-dev": {
-                "requests/test-server": "dev-master"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Requests": "library/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "ISC"
-            ],
-            "authors": [
-                {
-                    "name": "Ryan McCue",
-                    "homepage": "http://ryanmccue.info"
-                }
-            ],
-            "description": "A HTTP library written in PHP, for human beings.",
-            "homepage": "http://github.com/rmccue/Requests",
-            "keywords": [
-                "curl",
-                "fsockopen",
-                "http",
-                "idna",
-                "ipv6",
-                "iri",
-                "sockets"
-            ],
-            "time": "2016-10-13T00:11:37+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",

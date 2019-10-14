@@ -2,29 +2,18 @@
 
 namespace onefasteuro\ShopifyApps\Auth;
 
-use Illuminate\Support\Arr;
-use onefasteuro\ShopifyApps\Nonce;
-use Illuminate\Http\Request;
-
-class ShopifyVerifyOAuthRequest
+class OAuthRequestValidator
 {
     protected $config = [];
     protected $nonce;
 
-    public function __construct(array $config, Nonce $nonce)
+    public function __construct(array $config, \onefasteuro\ShopifyApps\Nonce $nonce)
     {
         $this->config = $config;
         $this->nonce = $nonce;
     }
 
-    public function verify(Request $request)
-    {
-        $this->assertDomain($request);
-        $this->assertHMAC($request);
-        $this->assertNonce($request);
-    }
-
-    protected function assertNonce(\Illuminate\Http\Request $request)
+    public function assertNonce(\Illuminate\Http\Request $request)
     {
         $nonce = $this->nonce->retrieve();
 
@@ -32,15 +21,14 @@ class ShopifyVerifyOAuthRequest
         return $nonce === $request->query('state');
     }
 
-    protected function assertDomain(\Illuminate\Http\Request $request)
+	public function assertDomain(\Illuminate\Http\Request $request)
     {
         $domain = $request->get('shop');
-
         return preg_match('/[a-zA-Z0-9\-]+\.myshopify\.com/', $domain);
     }
 
 
-    protected function assertHMAC(\Illuminate\Http\Request $request)
+	public function assertHMAC(\Illuminate\Http\Request $request)
     {
         $query = $request->query();
 
@@ -60,7 +48,7 @@ class ShopifyVerifyOAuthRequest
         $data = urldecode(http_build_query($query));
 
 
-        $secret = Arr::get($this->config, 'appname.client_secret');
+        $secret = $this->config['client_secret'];
 
         $calc = hash_hmac('sha256', $data, $secret);
 
