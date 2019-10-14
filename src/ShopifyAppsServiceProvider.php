@@ -6,9 +6,9 @@ namespace onefasteuro\ShopifyApps;
 use Illuminate\Support\ServiceProvider as BaseProvider;
 use onefasteuro\ShopifyApps\Auth\ShopifyAuthService;
 use onefasteuro\ShopifyApps\Auth\ShopifyVerifyOAuthRequest;
-use onefasteuro\ShopifyApps\Http\SetupMiddleware;
+use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
 use onefasteuro\ShopifyApps\Http\AuthMiddleware;
-use onefasteuro\ShopifyApps\Http\SaveNonceMiddleware;
+use onefasteuro\ShopifyApps\Http\SaveNonceStoreMiddleware;
 use onefasteuro\ShopifyApps\Http\Controllers\AuthController;
 use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
 
@@ -95,12 +95,12 @@ class ShopifyAppsServiceProvider extends BaseProvider
             return new AuthMiddleware($app[Nonce::class]);
         });
 
-        $this->app->singleton(SetupMiddleware::class, function($app){
-            return new SetupMiddleware($app['config'], $app[Nonce::class]);
+        $this->app->singleton(SetNonceStoreMiddleware::class, function($app){
+            return new SetNonceStoreMiddleware($app['config'], $app[Nonce::class]);
         });
 
-        $this->app->singleton(SaveNonceMiddleware::class,function($app){
-            return new SaveNonceMiddleware($app[Nonce::class]);
+        $this->app->singleton(SaveNonceStoreMiddleware::class,function($app){
+            return new SaveNonceStoreMiddleware($app[Nonce::class]);
         });
     }
 
@@ -110,22 +110,10 @@ class ShopifyAppsServiceProvider extends BaseProvider
     {
         $this->app->singleton(ShopifyAuthService::class, function($app){
         	
-        	
-        	$route_name = $app['request']->route()->parameter('shopify_app_name');
-        	
-        	
-        	$config = $app['config']->get('shopifyapps.' . $route_name);
-        	
-        	//no config? throw error
-        	if(!$config) {
-	        
-	        }
-        	
             return new ShopifyAuthService(
                 $app[Nonce::class],
                 $app[GraphClient::class],
-                $app[EventsDispatcher::class],
-                $app['config']);
+                $app[EventsDispatcher::class]);
         });
 
         $this->app->singleton(ShopifyVerifyOAuthRequest::class, function($app) {

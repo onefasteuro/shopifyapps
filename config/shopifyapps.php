@@ -1,8 +1,8 @@
 <?php
 
 return [
-
-    'default' => null,
+	
+	
 	
 	'test-app' => [
             'client_id' => 'test-client_id',

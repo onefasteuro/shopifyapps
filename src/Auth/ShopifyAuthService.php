@@ -14,18 +14,38 @@ class ShopifyAuthService
     protected $nonce;
     protected $client;
     protected $events;
-    protected $config;
+    protected $config = [];
 
     //the active app that we draw config etc from
     protected $shopify_app;
     protected $shopify_domain;
 
-	public function __construct(Nonce $nonce, GraphClient $client, EventsDispatcher $events, ConfigRepository $config)
+	public function __construct(Nonce $nonce, GraphClient $client, EventsDispatcher $events)
     {
-        $this->config = $config;
         $this->nonce = $nonce;
         $this->client = $client;
         $this->events = $events;
+    }
+    
+    public function setShopifyAppConfig(array $config)
+    {
+    	$config = $this->validateConfig($config);
+    	$this->config = $config;
+    	return $this;
+    }
+    
+    protected function validateConfig(array $config)
+    {
+    	//params we need to check
+    	$params = [
+    		'client_id',
+		    'client_secret',
+		    'return_url',
+		    'redirect_url',
+		    'scope'
+	    ];
+    	
+    	return $config;
     }
 
     public function setShopifyApp($app)

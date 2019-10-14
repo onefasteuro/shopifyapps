@@ -3,7 +3,7 @@
 namespace onefasteuro\ShopifyApps\Http;
 
 
-class AuthMiddleware extends SaveNonceMiddleware
+class AuthMiddleware extends SaveNonceStoreMiddleware
 {
 
 	public function handle($request, \Closure $next)

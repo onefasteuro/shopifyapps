@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use onefasteuro\ShopifyApps\Events\AppWasCreated;
 use onefasteuro\ShopifyApps\Events\AppWasSaved;
 use onefasteuro\ShopifyApps\Helpers;
+use onefasteuro\ShopifyApps\Http\SaveNonceStoreMiddleware;
+use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
 use onefasteuro\ShopifyApps\Models\ShopifyApp;
 use onefasteuro\ShopifyApps\Auth\ShopifyAuthService;
 use Requests;
@@ -23,6 +25,8 @@ class AuthController extends \Illuminate\Routing\Controller
 	public function __construct(ShopifyAuthService $service)
 	{
 		$this->service = $service;
+		
+		$this->middleware([SetNonceStoreMiddleware::class, SaveNonceStoreMiddleware::class])->only('redirectToAuth');
 	}
 	
 	protected function view($view, array $data = [])
@@ -37,8 +41,11 @@ class AuthController extends \Illuminate\Routing\Controller
      * @param $shop
      * @return mixed
      */
-	public function redirectToAuth(Request $request, $appname, $shop)
+	public function redirectToAuth(Request $request, $shopify_app_name, $shop)
 	{
+		$config = config('shopifyapps.'.$shopify_app_name);
+		
+		$this->service->setShopifyAppConfig($config);
         $this->service->setShopifyDomain($shop);
 
 
