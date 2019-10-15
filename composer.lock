@@ -677,12 +677,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyclient.git",
-                "reference": "02cdb6d9b1a077f0136033b2bb6eb06fc5722620"
+                "reference": "ec20600c23f91d42a8fbf471c01528b397c5ad0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/02cdb6d9b1a077f0136033b2bb6eb06fc5722620",
-                "reference": "02cdb6d9b1a077f0136033b2bb6eb06fc5722620",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/ec20600c23f91d42a8fbf471c01528b397c5ad0a",
+                "reference": "ec20600c23f91d42a8fbf471c01528b397c5ad0a",
                 "shasum": ""
             },
             "require": {
@@ -731,7 +731,7 @@
                 "laravel",
                 "shopify"
             ],
-            "time": "2019-10-15T14:18:47+00:00"
+            "time": "2019-10-15T14:57:13+00:00"
         },
         {
             "name": "onefasteuro/shopifyutils",

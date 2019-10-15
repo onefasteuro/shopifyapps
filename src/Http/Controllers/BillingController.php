@@ -7,8 +7,9 @@ use Illuminate\Http\Request;
 
 //exceptions
 use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
-use onefasteuro\ShopifyApps\Repositories\GraphqlRepository;
 use onefasteuro\ShopifyApps\Services\BillingService;
+use onefasteuro\ShopifyClient\Exceptions\NotReadyException;
+use onefasteuro\ShopifyClient\GraphClientInterface;
 
 
 class BillingController extends BaseController
@@ -24,10 +25,11 @@ class BillingController extends BaseController
 	{
 		$model = resolve(AppRepositoryInterface::class)->findByAppInstallId($app_installation_id);
 		
-		$params = [
+		$client_params = [
 			'token' => $model->token,
 			'domain' => $model->shop_domain,
 		];
+		$client = resolve(GraphClientInterface::class, $client_params);
 		
 		$config = static::getConfig($model->app_name);
 		
@@ -35,6 +37,21 @@ class BillingController extends BaseController
 			->setAppConfig($config)
 			->setAppDomain($model->shop_domain);
 		
+		try {
+			$response = $this->service->authorizeCharge($client);
+		}
+		catch(NotReadyException $e)
+		{
+			abort(403, $e->getMessage());
+		}
 		
+		
+		dd($response);
+	}
+	
+	
+	public function recordCharge()
+	{
+	
 	}
 }

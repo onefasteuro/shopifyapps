@@ -2,6 +2,7 @@
 
 namespace onefasteuro\ShopifyApps\Services;
 
+use onefasteuro\ShopifyApps\Events\TokenWasReceived;
 use onefasteuro\ShopifyClient\GraphClientInterface;
 use onefasteuro\ShopifyClient\GraphResponse;
 use onefasteuro\ShopifyUtils\ShopifyUtils;
@@ -42,7 +43,12 @@ class AuthService extends BaseService
         return $url;
         
     }
-    
+	
+	/**
+	 * Get the needed info from our shop
+	 * @param GraphClientInterface $client
+	 * @return mixed
+	 */
     public function getShopInfo(GraphClientInterface $client)
     {
 	    $call = 'query {
@@ -62,6 +68,14 @@ class AuthService extends BaseService
 			    domain: myshopifyDomain
 			  }
 			}';
+	    
+	    $response = $client->query($call, []);
+	    
+	    if($response->isOk()) {
+	    	$this->events->dispatch(new TokenWasReceived($response['access_token']));
+	    }
+	    
+	    return $response;
     }
     
     public function exchangeCodeForToken($code)

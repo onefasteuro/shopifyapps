@@ -10,7 +10,6 @@ use onefasteuro\ShopifyApps\Services\OAuthRequestValidator;
 
 
 use onefasteuro\ShopifyApps\Http\Controllers\BillingController;
-use onefasteuro\ShopifyClient\GraphClient;
 
 //middleware
 use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
