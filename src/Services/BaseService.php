@@ -7,12 +7,11 @@ use onefasteuro\ShopifyUtils\ShopifyUtils;
 use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
 use Illuminate\Support\Arr;
 
-class BaseService
+class BaseService implements ServiceInterface
 {
     protected $config = [];
     
 	//the active app that we draw config etc from
-	protected $shopify_app = null;
 	protected $shopify_domain = null;
 	
 	protected $events;
@@ -33,6 +32,7 @@ class BaseService
     {
     	//params we need to check
     	$params = [
+    		'app_id',
     		'client_id',
 		    'client_secret',
 		    'return_url',
@@ -54,12 +54,6 @@ class BaseService
     public function config($key)
     {
     	return Arr::get($this->config, $key);
-    }
-
-    public function setAppHandle($app)
-    {
-        $this->shopify_app = $app;
-        return $this;
     }
 
     public function setAppDomain($domain)

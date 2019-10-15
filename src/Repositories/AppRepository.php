@@ -4,6 +4,7 @@ namespace onefasteuro\ShopifyApps\Repositories;
 
 use onefasteuro\ShopifyApps\Models\ShopifyApp;
 use onefasteuro\ShopifyUtils\ShopifyUtils;
+use Illuminate\Support\Arr;
 
 class AppRepository implements AppRepositoryInterface
 {
@@ -30,7 +31,7 @@ class AppRepository implements AppRepositoryInterface
 	 * @param array $shop_data
 	 * @return mixed
 	 */
-	public function create($app_name, $token, array $app_data, array $shop_data)
+	public function create($token, array $app_data, array $shop_data)
 	{
 		$m = $this->findByAppInstallId($app_data['id']);
 		if(!$m) {
@@ -40,8 +41,8 @@ class AppRepository implements AppRepositoryInterface
 		}
 		
 		$m->app_installation_id = ShopifyUtils::gidParse($app_data['id']);
-		$m->app_name = $app_name;
-		$m->app_id = $app_data['id'];
+		$m->app_name = Arr::get($app_data, 'current.handle');
+		$m->app_id = Arr::get($app_data, 'current.id');
 		$m->app_launch_url = $app_data['launchUrl'];
 		$m->shop_domain = $shop_data['domain'];
 		$m->shop_name = $shop_data['name'];

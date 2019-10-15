@@ -9,7 +9,7 @@ use onefasteuro\ShopifyUtils\ShopifyUtils;
 use onefasteuro\ShopifyApps\Nonce;
 use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
 
-class AuthService extends BaseService
+class AuthService extends BaseService implements ServiceInterface
 {
 	const OAUTH_URL = 'https://%s/admin/oauth/authorize?client_id=%s&scope=%s&state=%s&redirect_uri=%s';
 	const TOKEN_URL = 'https://%s/admin/oauth/access_token';
@@ -30,7 +30,7 @@ class AuthService extends BaseService
         $redirect_url = $this->config['redirect_url'];
         
         if($redirect_url === 'shopify.auth.complete') {
-        	$redirect_url = route($redirect_url, ['shopify_app_name' => $this->shopify_app]);
+        	$redirect_url = route($redirect_url, ['app_id' => $this->config('app_id')]);
         }
         
         
@@ -72,12 +72,17 @@ class AuthService extends BaseService
 	    $response = $client->query($call, []);
 	    
 	    if($response->isOk()) {
-	    	$this->events->dispatch(new TokenWasReceived($response['access_token']));
+	    	$this->events->dispatch(new TokenWasReceived($response->body('access_token')));
 	    }
 	    
 	    return $response;
     }
-    
+	
+	/**
+	 * Exchange an auth code for an application token
+	 * @param $code
+	 * @return GraphResponse
+	 */
     public function exchangeCodeForToken($code)
     {
 	    $payload = [

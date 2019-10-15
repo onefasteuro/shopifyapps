@@ -2,11 +2,15 @@
 
 namespace onefasteuro\ShopifyApps\Http\Controllers;
 
+use onefasteuro\ShopifyApps\Services\ServiceInterface;
 
 class BaseController extends \Illuminate\Routing\Controller
 {
-	protected static function getConfig($name)
+	protected $config;
+	protected $service;
+	
+	public function __construct(ServiceInterface $service)
 	{
-		return config('shopifyapps.' . $name, []);
+		$this->service = $service;
 	}
 }

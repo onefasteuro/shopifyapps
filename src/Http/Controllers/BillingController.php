@@ -14,16 +14,19 @@ use onefasteuro\ShopifyClient\GraphClientInterface;
 
 class BillingController extends BaseController
 {
-	protected $service;
 	
 	public function __construct(BillingService $service)
 	{
-		$this->service = $service;
+		parent::__construct($service);
 	}
 	
 	public function redirectToBill($app_installation_id)
 	{
 		$model = resolve(AppRepositoryInterface::class)->findByAppInstallId($app_installation_id);
+		
+		if(!$model) {
+			//TODO
+		}
 		
 		$client_params = [
 			'token' => $model->token,
@@ -31,26 +34,30 @@ class BillingController extends BaseController
 		];
 		$client = resolve(GraphClientInterface::class, $client_params);
 		
-		$config = static::getConfig($model->app_name);
+		$config = shopifyAppsConfig($model->app_id);
 		
-		$this->service->setAppHandle($model->app_name)
-			->setAppConfig($config)
-			->setAppDomain($model->shop_domain);
+		$this->service->setAppConfig($config)->setAppDomain($model->shop_domain);
 		
 		try {
 			$response = $this->service->authorizeCharge($client);
+			
+			//go to the authorization code
+			return redirect()->to($response->body('confirmationUrl'));
 		}
 		catch(NotReadyException $e)
 		{
 			abort(403, $e->getMessage());
 		}
-		
-		
-		dd($response);
 	}
 	
 	
 	public function recordCharge()
+	{
+	
+	}
+	
+	
+	public function handleWebhooks()
 	{
 	
 	}

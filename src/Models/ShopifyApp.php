@@ -15,9 +15,9 @@ class ShopifyApp extends Model
 	
 
 	
-	public function bill()
+	public function bills()
 	{
-		return $this->hasOne(ShopifyBilling::class, 'app_id','id')->withDefault();
+		return $this->hasMany(ShopifyBilling::class, 'app_id','id')->withDefault();
 	}
 	
 	public function setAppIdAttribute($value)
@@ -58,19 +58,5 @@ class ShopifyApp extends Model
 	{
 		return $this->app_launch_url;
 	}
-
-	public function getBillingProviderAttribute()
-    {
-        return ShopifyUtils::getBillingProvider($this->app_name);
-    }
-    
-
-	public function updateBillingPurchaseId($id)
-    {
-        $this->bill->purchase_id = $id;
-        $this->bill->save();
-
-        return $this;
-    }
 }
 

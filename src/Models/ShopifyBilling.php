@@ -3,7 +3,7 @@
 namespace onefasteuro\ShopifyApps\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use onefasteuro\ShopifyApps\Helpers;
+use onefasteuro\ShopifyUtils\ShopifyUtils;
 
 class ShopifyBilling extends Model
 {
@@ -23,7 +23,7 @@ class ShopifyBilling extends Model
 	
 	public function getPurchaseIdAttribute($value)
 	{
-		$this->attributes['purchase_id'] = Helpers::gidParse($value);
+		$this->attributes['purchase_id'] = ShopifyUtils::gidParse($value);
 	}
 	
 	public function getPurchaseGidAttribute()

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "14af5aff2ad5c941fd54168b55d4b66b",
+    "content-hash": "e466a5d01b5c57c8bea5a4aab8b89fec",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -677,15 +677,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyclient.git",
-                "reference": "ec20600c23f91d42a8fbf471c01528b397c5ad0a"
+                "reference": "51a087f559401f027532a65fcb603155d23c288d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/ec20600c23f91d42a8fbf471c01528b397c5ad0a",
-                "reference": "ec20600c23f91d42a8fbf471c01528b397c5ad0a",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/51a087f559401f027532a65fcb603155d23c288d",
+                "reference": "51a087f559401f027532a65fcb603155d23c288d",
                 "shasum": ""
             },
             "require": {
+                "ext-curl": "*",
                 "ext-json": "*",
                 "illuminate/config": "^6.0",
                 "illuminate/support": "^6.0",
@@ -731,7 +732,7 @@
                 "laravel",
                 "shopify"
             ],
-            "time": "2019-10-15T14:57:13+00:00"
+            "time": "2019-10-15T19:13:49+00:00"
         },
         {
             "name": "onefasteuro/shopifyutils",
@@ -4422,7 +4423,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-curl": "*"
     },
     "platform-dev": []
 }

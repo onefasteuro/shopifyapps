@@ -4,7 +4,7 @@ namespace onefasteuro\ShopifyApps\Http\Controllers;
 
 
 use Illuminate\Http\Request;
-use onefasteuro\ShopifyApps\Services\AuthService;
+use onefasteuro\ShopifyApps\Services\ServiceInterface as AuthService;
 
 //middleware
 use onefasteuro\ShopifyApps\Http\AuthMiddleware;
@@ -14,24 +14,20 @@ use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
 //repositories
 use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
 use onefasteuro\ShopifyClient\GraphClientInterface;
+use Symfony\Component\HttpKernel\Client;
 
 
 class AuthController extends BaseController
 {
-	protected $service;
 	
 	public function __construct(AuthService $service)
 	{
-		$this->service = $service;
+		parent::__construct($service);
 		
 		$this->middleware([SetNonceStoreMiddleware::class, SaveNonceStoreMiddleware::class])->only('redirectToAuth');
 		$this->middleware([SetNonceStoreMiddleware::class, AuthMiddleware::class])->only('completeAuth');
 	}
 	
-	protected static function getConfig($name)
-	{
-		return config('shopifyapps.'.$name, []);
-	}
 	
 	protected function view($view, array $data = [])
 	{
@@ -45,12 +41,11 @@ class AuthController extends BaseController
      * @param $shop
      * @return mixed
      */
-	public function redirectToAuth($shopify_app_name, $shop)
+	public function redirectToAuth($app_id, $shop)
 	{
-		$config = static::getConfig($shopify_app_name);
+		$config = shopifyAppsConfig($app_id);
 		
-		$this->service->setAppHandle($shopify_app_name)
-			->setAppConfig($config)
+		$this->service->setAppConfig($config)
 			->setAppDomain($shop);
 
 		$redirect = $this->service->getOAuthUrl();
@@ -59,13 +54,12 @@ class AuthController extends BaseController
 	}
 	
 
-    public function completeAuth(Request $request, $shopify_app_name)
+    public function completeAuth(Request $request, $app_id)
     {
-	    $config = static::getConfig($shopify_app_name);
+	    $config = shopifyAppsConfig($app_id);
 	
 	    //set the needed data for our service config
-	    $this->service->setAppHandle($shopify_app_name)
-		    ->setAppConfig($config)
+	    $this->service->setAppConfig($config)
 		    ->setAppDomain($request->get('shop'));
 	    
     	
@@ -79,17 +73,19 @@ class AuthController extends BaseController
 		]);
 		
 		try {
+			//get the shop info to save in our db
 			$shop_info = $this->service->getShopInfo($client);
 			
+			//resolve our repository
 			$app_repo = resolve(AppRepositoryInterface::class);
 			
 			$params = [
-				$shopify_app_name,
 				$token_response->body('access_token'),
 				$shop_info->body('data.app'),
 				$shop_info->body('data.shop')
 			];
 			
+			//persist a new shopify app
 			$shopify_app = call_user_func_array([$app_repo, 'create'], $params);
 			
 			return redirect()->to($shopify_app->launch_url);

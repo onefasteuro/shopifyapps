@@ -6,7 +6,7 @@ use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
 use onefasteuro\ShopifyClient\GraphClientInterface;
 use onefasteuro\ShopifyApps\Exceptions\ConfigException;
 
-class BillingService extends BaseService
+class BillingService extends BaseService implements ServiceInterface
 {
 	
 	protected function validateConfig(array $config)
@@ -18,6 +18,8 @@ class BillingService extends BaseService
 			'test',
 			'trial',
 			'return_url',
+			'type',
+			'plans',
 		];
 		
 		foreach($params as $key)
@@ -33,10 +35,63 @@ class BillingService extends BaseService
 	
 	public function authorizeCharge(GraphClientInterface $client)
 	{
-		$trial = $this->config('billing.trial');
-		$test = $this->config('billing.test');
-		$type = $this->config('billing.type');
+		$call =  'mutation($trial: Int, $test: Boolean, $name: String!, $return: URL!) {
+			  bill: appSubscriptionCreate(
+			    test: $test
+			    name: $name
+			    trialDays: $trial
+			    returnUrl: $return
+			    lineItems: [%s]
+			  ) {
+			    userErrors {
+			      field
+			      message
+			    }
+			    confirmationUrl
+			    appSubscription {
+			      id
+			    }
+			  }
+			}';
 		
+		$line_items = $this->getPlan();
 		
+		$params = $this->getChargeParams();
+		
+		$call = sprintf($call, $line_items);
+		
+		$response = $client->query($call, $params);
+		
+		return $response;
+	}
+	
+	
+	protected function getChargeParams()
+	{
+		$params = [
+			'test' => $this->config('billing.test'),
+			'trial' => $this->config('billing.trial'),
+			'name' => $this->config('billing.name'),
+			'return' => 'https://bpisports.com',
+		];
+		return $params;
+	}
+	
+	protected function getPlan()
+	{
+		$items = $this->config('billing.plans');
+		$output = '';
+		
+		foreach($items as $key => $item) {
+			$output .= '{
+				plan: {
+					appRecurringPricingDetails: {
+			            price: { amount: ' . $item['amount'] . ', currencyCode: ' . $item['currency'] . ' }
+			        }
+				}
+			}';
+		}
+		
+		return $output;
 	}
 }
