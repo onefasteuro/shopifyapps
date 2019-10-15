@@ -3,10 +3,9 @@
 namespace onefasteuro\ShopifyApps\Services;
 
 use onefasteuro\ShopifyApps\Exceptions\ConfigException;
-use onefasteuro\ShopifyClient\GraphResponse;
 use onefasteuro\ShopifyUtils\ShopifyUtils;
-use onefasteuro\ShopifyApps\Nonce;
 use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
+use Illuminate\Support\Arr;
 
 class BaseService
 {
@@ -15,7 +14,14 @@ class BaseService
 	//the active app that we draw config etc from
 	protected $shopify_app = null;
 	protected $shopify_domain = null;
-    
+	
+	protected $events;
+	
+	public function __construct(EventsDispatcher $events)
+	{
+		$this->events = $events;
+	}
+	
     public function setAppConfig(array $config)
     {
     	$config = $this->validateConfig($config);
@@ -31,7 +37,8 @@ class BaseService
 		    'client_secret',
 		    'return_url',
 		    'redirect_url',
-		    'scope'
+		    'scope',
+		    'billing'
 	    ];
     	
     	foreach($params as $key)
@@ -42,6 +49,11 @@ class BaseService
 	    }
 	    
     	return $config;
+    }
+    
+    public function config($key)
+    {
+    	return Arr::get($this->config, $key);
     }
 
     public function setAppHandle($app)

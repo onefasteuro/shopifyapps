@@ -8,6 +8,8 @@ use onefasteuro\ShopifyUtils\ShopifyUtils;
 class AppRepository implements AppRepositoryInterface
 {
 	
+	
+	
 	public function model()
 	{
 		return ShopifyApp::class;

@@ -3,52 +3,40 @@
 namespace onefasteuro\ShopifyApps\Services;
 
 use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
-use onefasteuro\ShopifyClient\GraphClient;
+use onefasteuro\ShopifyClient\GraphClientInterface;
+use onefasteuro\ShopifyApps\Exceptions\ConfigException;
 
-class BillingService extends BaseService implements BillingInterface
+class BillingService extends BaseService
 {
-	protected $events;
-	protected $client;
 	
-	public function __construct(GraphClient $client, EventsDispatcher $events)
+	protected function validateConfig(array $config)
 	{
-		$this->events = $events;
-		$this->client = $client;
+		$config = parent::validateConfig($config);
+		
+		//params we need to check
+		$params = [
+			'test',
+			'trial',
+			'return_url',
+		];
+		
+		foreach($params as $key)
+		{
+			if(!array_key_exists($key, $config['billing'])) {
+				throw new ConfigException('The '.$key.' key is missing from the config');
+			}
+		}
+		
+		return $config;
 	}
 	
-	public static function authorizeCharge(GraphClient $client, $return_url)
+	
+	public function authorizeCharge(GraphClientInterface $client)
 	{
-		$call =  'mutation($trial: Int, $test: Boolean, $name: String!, $return: URL!) {
-			  bill: appSubscriptionCreate(
-			    test: $test
-			    name: $name
-			    trialDays: $trial
-			    returnUrl: $return
-			    lineItems: [{
-			      plan: {
-			        appRecurringPricingDetails: {
-			            price: { amount: 500.00, currencyCode: USD }
-			        }
-			      }
-			    }]
-			  ) {
-			    userErrors {
-			      field
-			      message
-			    }
-			    confirmationUrl
-			    appSubscription {
-			      id
-			    }
-			  }
-			}';
+		$trial = $this->config('billing.trial');
+		$test = $this->config('billing.test');
+		$type = $this->config('billing.type');
 		
 		
-		return $client->query($call, [
-			'test' => static::testCharge(),
-			'name' => static::name(),
-			'trial' => static::trialDuration(),
-			'return' => $return_url,
-		]);
 	}
 }

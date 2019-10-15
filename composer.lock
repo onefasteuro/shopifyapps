@@ -295,16 +295,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v6.2.0",
+            "version": "v6.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "cacce5a77fa94793cf25345d67387632134d75dd"
+                "reference": "80914c430fb5e49f492812d704ba6aeec03d80a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/cacce5a77fa94793cf25345d67387632134d75dd",
-                "reference": "cacce5a77fa94793cf25345d67387632134d75dd",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/80914c430fb5e49f492812d704ba6aeec03d80a2",
+                "reference": "80914c430fb5e49f492812d704ba6aeec03d80a2",
                 "shasum": ""
             },
             "require": {
@@ -437,7 +437,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2019-10-08T12:50:06+00:00"
+            "time": "2019-10-15T13:38:24+00:00"
         },
         {
             "name": "league/flysystem",
@@ -677,12 +677,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyclient.git",
-                "reference": "8ef46cb0ffb4605cb346aa8b838f328bbb005471"
+                "reference": "02cdb6d9b1a077f0136033b2bb6eb06fc5722620"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/8ef46cb0ffb4605cb346aa8b838f328bbb005471",
-                "reference": "8ef46cb0ffb4605cb346aa8b838f328bbb005471",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/02cdb6d9b1a077f0136033b2bb6eb06fc5722620",
+                "reference": "02cdb6d9b1a077f0136033b2bb6eb06fc5722620",
                 "shasum": ""
             },
             "require": {
@@ -731,7 +731,7 @@
                 "laravel",
                 "shopify"
             ],
-            "time": "2019-10-14T13:10:40+00:00"
+            "time": "2019-10-15T14:18:47+00:00"
         },
         {
             "name": "onefasteuro/shopifyutils",

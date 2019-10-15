@@ -18,7 +18,6 @@ use onefasteuro\ShopifyApps\Http\AuthMiddleware;
 use onefasteuro\ShopifyApps\Http\SaveNonceStoreMiddleware;
 
 //repositories
-use onefasteuro\ShopifyApps\Repositories\GraphqlRepository;
 use onefasteuro\ShopifyApps\Repositories\AppRepository;
 use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
 
@@ -86,9 +85,6 @@ class ShopifyAppsServiceProvider extends ServiceProvider
         	return new Nonce;
         });
         
-	    $this->app->bind(GraphqlRepository::class, function($app, $params){
-		    return new GraphqlRepository($app[GraphClient::class], $params['domain'], $params['token']);
-	    });
 	
 	    $this->app->bind(AppRepositoryInterface::class, function(){
 		    return new AppRepository;
@@ -100,7 +96,7 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 	    
 	    
 	    $this->app->singleton(BillingService::class, function($app){
-		    return new BillingService($app[GraphClient::class], $app['events']);
+		    return new BillingService($app['events']);
 	    });
 	    
 	    $this->app->singleton(OAuthRequestValidator::class, function($app) {

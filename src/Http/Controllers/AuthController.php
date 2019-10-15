@@ -18,6 +18,8 @@ use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
 //repositories
 use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
 use onefasteuro\ShopifyApps\Repositories\GraphqlRepository;
+use onefasteuro\ShopifyApps\Registry;
+use onefasteuro\ShopifyClient\GraphClient;
 
 
 class AuthController extends BaseController
@@ -75,8 +77,13 @@ class AuthController extends BaseController
 	    //exchange code for a token
 		$token_response = $this->service->exchangeCodeForToken($request->get('code'));
 		
-		$graph_repo = resolve(GraphqlRepository::class, ['domain' => $request->get('shop'), 'token' => $token_response->body('access_token') ]);
-		$shop_info = $graph_repo->getShopInfo();
+		$client = resolve(GraphClient::class, [
+			'domain' => $request->get('shop'),
+			'token' => $token_response->body('access_token')
+		]);
+		
+		$shop_info = $this->service->getShopInfo($client);
+		
 		
 		$app_repo = resolve(AppRepositoryInterface::class);
 		

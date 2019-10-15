@@ -2,7 +2,7 @@
 
 namespace onefasteuro\ShopifyApps\Services;
 
-use onefasteuro\ShopifyApps\Exceptions\ConfigException;
+use onefasteuro\ShopifyClient\GraphClientInterface;
 use onefasteuro\ShopifyClient\GraphResponse;
 use onefasteuro\ShopifyUtils\ShopifyUtils;
 use onefasteuro\ShopifyApps\Nonce;
@@ -13,14 +13,12 @@ class AuthService extends BaseService
 	const OAUTH_URL = 'https://%s/admin/oauth/authorize?client_id=%s&scope=%s&state=%s&redirect_uri=%s';
 	const TOKEN_URL = 'https://%s/admin/oauth/access_token';
 	
-	
     protected $nonce;
-    protected $events;
 
 	public function __construct(Nonce $nonce, EventsDispatcher $events)
     {
+    	parent::__construct($events);
         $this->nonce = $nonce;
-        $this->events = $events;
     }
     
     /**
@@ -45,6 +43,26 @@ class AuthService extends BaseService
         
     }
     
+    public function getShopInfo(GraphClientInterface $client)
+    {
+	    $call = 'query {
+			  app: appInstallation {
+			    id
+			    launchUrl
+			    uninstallUrl
+			    current: app {
+			        id
+			        handle
+			    }
+			  }
+			  shop {
+			    id
+			    name
+			    email
+			    domain: myshopifyDomain
+			  }
+			}';
+    }
     
     public function exchangeCodeForToken($code)
     {
