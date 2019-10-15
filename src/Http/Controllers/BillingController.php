@@ -20,6 +20,11 @@ class BillingController extends BaseController
 		parent::__construct($service);
 	}
 	
+	/**
+	 * Redirects the user to their shopify store to authorize or decline the charge
+	 * @param $app_installation_id
+	 * @return \Illuminate\Http\RedirectResponse
+	 */
 	public function redirectToBill($app_installation_id)
 	{
 		$model = resolve(AppRepositoryInterface::class)->findByAppInstallId($app_installation_id);

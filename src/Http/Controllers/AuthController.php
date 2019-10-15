@@ -14,6 +14,7 @@ use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
 //repositories
 use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
 use onefasteuro\ShopifyClient\GraphClientInterface;
+use onefasteuro\ShopifyClient\GraphResponse;
 use Symfony\Component\HttpKernel\Client;
 
 
@@ -77,16 +78,8 @@ class AuthController extends BaseController
 			$shop_info = $this->service->getShopInfo($client);
 			
 			//resolve our repository
-			$app_repo = resolve(AppRepositoryInterface::class);
+			$shopify_app = $this->saveShopifyApp($token_response, $shop_info);
 			
-			$params = [
-				$token_response->body('access_token'),
-				$shop_info->body('data.app'),
-				$shop_info->body('data.shop')
-			];
-			
-			//persist a new shopify app
-			$shopify_app = call_user_func_array([$app_repo, 'create'], $params);
 			
 			return redirect()->to($shopify_app->launch_url);
 		}
@@ -94,5 +87,19 @@ class AuthController extends BaseController
 		{
 			abort(400, $e->getMessage());
 		}
+    }
+    
+    
+    protected function saveShopifyApp($token_response, GraphResponse $shop_info)
+    {
+	    $app_repo = resolve(AppRepositoryInterface::class);
+	    $params = [
+		    $token_response->body('access_token'),
+		    $shop_info->body('data.app'),
+		    $shop_info->body('data.shop')
+	    ];
+	
+	    //persist a new shopify app
+	    return call_user_func_array([$app_repo, 'create'], $params);
     }
 }
