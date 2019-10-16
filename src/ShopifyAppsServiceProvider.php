@@ -54,15 +54,6 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 	{
 		$events = $this->app['events'];
 		
-		//decides the start config for this
-		$events->listen(\Illuminate\Routing\Events\RouteMatched::class, function(\Illuminate\Routing\Events\RouteMatched $event) {
-			$name = $event->route->getName();
-			if(preg_match('/shopify\.auth\.|shopify\.billing\./', $name)) {
-				$app_id = $event->route->parameter('app_id');
-				config()->set('shopifyapps.default', 'app_' . $app_id);
-			}
-		});
-		
 		//event if needed
 		$events->listen(Events\TokenWasReceived::class, function(Events\TokenWasReceived $event){
 			$token = $event->token;
