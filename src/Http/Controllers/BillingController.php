@@ -2,22 +2,26 @@
 
 namespace onefasteuro\ShopifyApps\Http\Controllers;
 
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\App;
 
-use Illuminate\Http\Request;
-
-//exceptions
-use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
 use onefasteuro\ShopifyApps\Services\BillingService;
 use onefasteuro\ShopifyClient\Exceptions\NotReadyException;
 use onefasteuro\ShopifyClient\GraphClientInterface;
 
 
-class BillingController extends BaseController
+class BillingController extends AbstractBaseController
 {
-	
-	public function __construct(BillingService $service)
+	protected function getService($app_id)
 	{
-		parent::__construct($service);
+		//get the right config file
+		$config = Config::get("shopifyapps.app_$app_id");
+		return App::makeWith(BillingService::class, ['config' => $config]);
+	}
+	
+	protected function init()
+	{
+	
 	}
 	
 	/**
@@ -27,38 +31,34 @@ class BillingController extends BaseController
 	 */
 	public function redirectToBill($app_installation_id)
 	{
-		$model = resolve(AppRepositoryInterface::class)->findByAppInstallId($app_installation_id);
+		$model = $this->repository->findByAppInstallId($app_installation_id);
 		
 		if(!$model) {
 			//TODO
 		}
 		
-		$client_params = [
+		$service = $this->getService($model->app_id);
+		
+		$client = resolve(GraphClientInterface::class, [
 			'token' => $model->token,
 			'domain' => $model->shop_domain,
-		];
-		$client = resolve(GraphClientInterface::class, $client_params);
+		]);
 		
-		$config = shopifyAppsConfig($model->app_id);
+		$response = $service->authorizeCharge($client);
 		
-		$this->service->setAppConfig($config)->setAppDomain($model->shop_domain);
-		
-		try {
-			$response = $this->service->authorizeCharge($client);
-			
-			//go to the authorization code
-			return redirect()->to($response->body('confirmationUrl'));
-		}
-		catch(NotReadyException $e)
-		{
-			abort(403, $e->getMessage());
-		}
+		//go to the authorization code
+		return redirect()->to($response->body('data.bill.confirmationUrl'));
 	}
 	
 	
-	public function recordCharge()
-	{
 	
+	public function completeBilling($app_installation_id)
+	{
+		$model = $this->repository->findByAppInstallId($app_installation_id);
+		
+		if(!$model) {
+			//TODO
+		}
 	}
 	
 	

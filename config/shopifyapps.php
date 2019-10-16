@@ -2,6 +2,7 @@
 
 return [
 	
+	'default' => 'app_appid',
 	
 	'app_appid' => [
 			'app_id' => 'app_id',

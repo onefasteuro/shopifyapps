@@ -54,6 +54,15 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 	{
 		$events = $this->app['events'];
 		
+		//decides the start config for this
+		$events->listen(\Illuminate\Routing\Events\RouteMatched::class, function(\Illuminate\Routing\Events\RouteMatched $event) {
+			$name = $event->route->getName();
+			if(preg_match('/shopify\.auth\.|shopify\.billing\./', $name)) {
+				$app_id = $event->route->parameter('app_id');
+				config()->set('shopifyapps.default', 'app_' . $app_id);
+			}
+		});
+		
 		//event if needed
 		$events->listen(Events\TokenWasReceived::class, function(Events\TokenWasReceived $event){
 			$token = $event->token;
@@ -91,13 +100,29 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 		    return new AppRepository;
 	    });
 	
-	    $this->app->singleton(AuthService::class, function($app){
-		    return new AuthService($app[Nonce::class], $app['events']);
+	    $this->app->singleton(AuthService::class, function($app, $params = []){
+		
+	    	$service = new AuthService($app[Nonce::class], $app['events']);
+	    	
+		    if(array_key_exists('config', $params)) {
+			    $config = $params['config'];
+			    $service->setAppConfig($config);
+		    }
+	    	
+		    return $service;
 	    });
 	    
 	    
-	    $this->app->singleton(BillingService::class, function($app){
-		    return new BillingService($app['events']);
+	    $this->app->singleton(BillingService::class, function($app, $params = []){
+		
+		    $service = new BillingService($app['events']);
+		
+		    if(array_key_exists('config', $params)) {
+			    $config = $params['config'];
+			    $service->setAppConfig($config);
+		    }
+		    
+		    return $service;
 	    });
 	    
 	    $this->app->singleton(OAuthRequestValidator::class, function($app) {
@@ -131,11 +156,11 @@ class ShopifyAppsServiceProvider extends ServiceProvider
     protected function registerControllers()
     {
 	    $this->app->singleton(AuthController::class, function($app){
-		    return new AuthController( $app[AuthService::class] );
+		    return new AuthController( $app[AppRepositoryInterface::class] );
 	    });
 	
 	    $this->app->singleton(BillingController::class, function($app){
-		    return new BillingController($app[BillingService::class]);
+		    return new BillingController( $app[AppRepositoryInterface::class] );
 	    });
     }
     

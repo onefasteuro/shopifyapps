@@ -3,32 +3,35 @@
 namespace onefasteuro\ShopifyApps\Http\Controllers;
 
 
+//app
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
-use onefasteuro\ShopifyApps\Services\ServiceInterface as AuthService;
+use onefasteuro\ShopifyApps\Services\AuthService;
+use onefasteuro\ShopifyClient\GraphClientInterface;
+use onefasteuro\ShopifyClient\GraphResponse;
 
 //middleware
 use onefasteuro\ShopifyApps\Http\AuthMiddleware;
 use onefasteuro\ShopifyApps\Http\SaveNonceStoreMiddleware;
 use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
 
-//repositories
-use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
-use onefasteuro\ShopifyClient\GraphClientInterface;
-use onefasteuro\ShopifyClient\GraphResponse;
-use Symfony\Component\HttpKernel\Client;
 
 
-class AuthController extends BaseController
+class AuthController extends AbstractBaseController
 {
-	
-	public function __construct(AuthService $service)
+	protected function getService($app_id)
 	{
-		parent::__construct($service);
-		
+		//get the right config file
+		$config = Config::get("shopifyapps.app_$app_id");
+		return App::makeWith(AuthService::class, ['config' => $config]);
+	}
+	
+	protected function init()
+	{
 		$this->middleware([SetNonceStoreMiddleware::class, SaveNonceStoreMiddleware::class])->only('redirectToAuth');
 		$this->middleware([SetNonceStoreMiddleware::class, AuthMiddleware::class])->only('completeAuth');
 	}
-	
 	
 	protected function view($view, array $data = [])
 	{
@@ -42,14 +45,10 @@ class AuthController extends BaseController
      * @param $shop
      * @return mixed
      */
-	public function redirectToAuth($app_id, $shop)
+	public function redirectToAuth($app_id, $shop_domain)
 	{
-		$config = shopifyAppsConfig($app_id);
+		$redirect = $this->getService($app_id)->getOAuthUrl($shop_domain);
 		
-		$this->service->setAppConfig($config)
-			->setAppDomain($shop);
-
-		$redirect = $this->service->getOAuthUrl();
 		
 		return redirect()->to($redirect);
 	}
@@ -57,49 +56,39 @@ class AuthController extends BaseController
 
     public function completeAuth(Request $request, $app_id)
     {
-	    $config = shopifyAppsConfig($app_id);
-	
-	    //set the needed data for our service config
-	    $this->service->setAppConfig($config)
-		    ->setAppDomain($request->get('shop'));
-	    
+    	$service = $this->getService($app_id);
     	
 	    //exchange code for a token
-		$token_response = $this->service->exchangeCodeForToken($request->get('code'));
+		$token_response = $service->exchangeCodeForToken($request->get('shop'), $request->get('code'));
 		
 		//grab our graph client
 		$client = resolve(GraphClientInterface::class, [
 			'domain' => $request->get('shop'),
 			'token' => $token_response->body('access_token')
 		]);
-		
-		try {
-			//get the shop info to save in our db
-			$shop_info = $this->service->getShopInfo($client);
-			
-			//resolve our repository
-			$shopify_app = $this->saveShopifyApp($token_response, $shop_info);
-			
-			
-			return redirect()->to($shopify_app->launch_url);
-		}
-		catch(\onefasteuro\ShopifyClient\Exceptions\NotReadyException $e)
-		{
-			abort(400, $e->getMessage());
-		}
+	
+	    //get the shop info to save in our db
+	    $shop_info = $service->getShopInfo($client);
+	
+	    //resolve our repository
+	    $shopify_app = $this->saveShopifyApp($token_response, $shop_info);
+	    
+	    return redirect()->to($shopify_app->launch_url);
     }
-    
-    
+	
+	
+	/**
+	 * Saves our shopify app in the data store
+	 * @param $token_response
+	 * @param GraphResponse $shop_info
+	 * @return mixed
+	 */
     protected function saveShopifyApp($token_response, GraphResponse $shop_info)
     {
-	    $app_repo = resolve(AppRepositoryInterface::class);
-	    $params = [
-		    $token_response->body('access_token'),
+    	return $this->repository->create(
+    		$token_response->body('access_token'),
 		    $shop_info->body('data.app'),
 		    $shop_info->body('data.shop')
-	    ];
-	
-	    //persist a new shopify app
-	    return call_user_func_array([$app_repo, 'create'], $params);
+	    );
     }
 }

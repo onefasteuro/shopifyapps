@@ -3,17 +3,15 @@
 namespace onefasteuro\ShopifyApps\Http;
 
 
-use onefasteuro\ShopifyApps\Http\Controllers\BaseController;
 
 class AuthMiddleware extends SaveNonceStoreMiddleware
 {
-	
 	
 	public function handle($request, \Closure $next)
 	{
 		$app_id = $request->route()->parameter('app_id');
 		
-		$config = shopifyAppsConfig($app_id);
+		$config = config("shopifyapps.app_$app_id");
 		
 		$validator = new \onefasteuro\ShopifyApps\Services\OAuthRequestValidator($config, $this->nonce);
 		

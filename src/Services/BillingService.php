@@ -3,11 +3,15 @@
 namespace onefasteuro\ShopifyApps\Services;
 
 use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
+use onefasteuro\ShopifyApps\Exceptions\MissingChargeFormatException;
 use onefasteuro\ShopifyClient\GraphClientInterface;
 use onefasteuro\ShopifyApps\Exceptions\ConfigException;
 
-class BillingService extends BaseService implements ServiceInterface
+class BillingService extends AbstractBaseService implements ServiceInterface
 {
+	
+	const BILLING_SUBSCRIPTION = 'subscription';
+	const BILLING_ONE_TIME = 'onetime';
 	
 	protected function validateConfig(array $config)
 	{
@@ -20,6 +24,7 @@ class BillingService extends BaseService implements ServiceInterface
 			'return_url',
 			'type',
 			'plans',
+			'type',
 		];
 		
 		foreach($params as $key)
@@ -35,6 +40,29 @@ class BillingService extends BaseService implements ServiceInterface
 	
 	public function authorizeCharge(GraphClientInterface $client)
 	{
+		$type = $this->config('billing.type');
+		
+		$method = 'get' . ucfirst($type) . 'Query';
+		
+		if(!method_exists(__CLASS__, $method)) {
+			throw new MissingChargeFormatException('There is no charge of type: '.$type);
+		}
+		
+		$call = static::$method();
+		
+		$line_items = $this->getPlan();
+		
+		$params = $this->getChargeParams();
+		
+		$call = sprintf($call, $line_items);
+		
+		$response = $client->query($call, $params);
+		
+		return $response;
+	}
+	
+	protected static function getSubscriptionQuery()
+	{
 		$call =  'mutation($trial: Int, $test: Boolean, $name: String!, $return: URL!) {
 			  bill: appSubscriptionCreate(
 			    test: $test
@@ -48,22 +76,40 @@ class BillingService extends BaseService implements ServiceInterface
 			      message
 			    }
 			    confirmationUrl
-			    appSubscription {
+			    transaction: appSubscription {
 			      id
 			    }
 			  }
 			}';
 		
-		$line_items = $this->getPlan();
-		
-		$params = $this->getChargeParams();
-		
-		$call = sprintf($call, $line_items);
-		
-		$response = $client->query($call, $params);
-		
-		return $response;
+		return $call;
 	}
+	
+	
+	protected function getOnetimeQuery()
+	{
+		$call =  'mutation($trial: Int, $test: Boolean, $price: MoneyInput!, $name: String!, $return: URL!) {
+			  bill: appPurchaseOneTimeCreate(
+			    test: $test
+			    name: $name
+			    price: $price
+			    trialDays: $trial
+			    returnUrl: $return
+			  ) {
+			    userErrors {
+			      field
+			      message
+			    }
+			    confirmationUrl
+			    transaction: appPurchaseOneTime {
+			      id
+			    }
+			  }
+			}';
+		
+		return $call;
+	}
+	
 	
 	
 	protected function getChargeParams()
@@ -76,6 +122,8 @@ class BillingService extends BaseService implements ServiceInterface
 		];
 		return $params;
 	}
+	
+	
 	
 	protected function getPlan()
 	{
