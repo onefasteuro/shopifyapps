@@ -441,16 +441,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.56",
+            "version": "1.0.57",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "90e3f83cb10ef6b058d70f95267030e7a6236518"
+                "reference": "0e9db7f0b96b9f12dcf6f65bc34b72b1a30ea55a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/90e3f83cb10ef6b058d70f95267030e7a6236518",
-                "reference": "90e3f83cb10ef6b058d70f95267030e7a6236518",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/0e9db7f0b96b9f12dcf6f65bc34b72b1a30ea55a",
+                "reference": "0e9db7f0b96b9f12dcf6f65bc34b72b1a30ea55a",
                 "shasum": ""
             },
             "require": {
@@ -521,7 +521,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2019-10-12T13:05:59+00:00"
+            "time": "2019-10-16T21:01:05+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -740,12 +740,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyutils.git",
-                "reference": "c5dfe47ef35f4fd7522f58e11df6a7d2ee45fcf0"
+                "reference": "0b6777495e465929385a158de4218d5de7bc6332"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/c5dfe47ef35f4fd7522f58e11df6a7d2ee45fcf0",
-                "reference": "c5dfe47ef35f4fd7522f58e11df6a7d2ee45fcf0",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/0b6777495e465929385a158de4218d5de7bc6332",
+                "reference": "0b6777495e465929385a158de4218d5de7bc6332",
                 "shasum": ""
             },
             "require": {
@@ -780,7 +780,7 @@
             "keywords": [
                 "shopify"
             ],
-            "time": "2019-10-14T15:40:34+00:00"
+            "time": "2019-10-17T17:25:11+00:00"
         },
         {
             "name": "opis/closure",

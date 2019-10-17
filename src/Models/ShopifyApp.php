@@ -10,24 +10,10 @@ class ShopifyApp extends Model
 {
 	protected $table = 'shopify_apps';
 	
-	//appends to the toArray output
-	protected $appends = ['shop_gid', 'app_installation_gid'];
-	
-
 	
 	public function bills()
 	{
 		return $this->hasMany(ShopifyBilling::class, 'app_id','id')->withDefault();
-	}
-	
-	public function setAppIdAttribute($value)
-	{
-		$this->attributes['app_id'] = ShopifyUtils::gidParse($value);
-	}
-	
-	public function setShopIdAttribute($value)
-	{
-		$this->attributes['shop_id'] = ShopifyUtils::gidParse($value);
 	}
 	
 	public function setAppInstallationIdAttribute($value)
@@ -35,28 +21,14 @@ class ShopifyApp extends Model
 		$this->attributes['app_installation_id'] = ShopifyUtils::gidParse($value);
 	}
 	
-	public function getFqdnAttribute()
+	public function getMyshopifyDomainAttribute()
 	{
-		if(!preg_match('/http\:\/\//', $this->shop_domain)) {
-			return sprintf('https://%s', $this->shop_domain);
-		}
-		
-		return $this->shop_domain;
+		return sprintf('https://%s.myshopify.com', $this->shop_handle);
 	}
 	
 	public function getShopGidAttribute()
 	{
 		return ShopifyUtils::gidRestore($this->shop_id, 'Shop');
-	}
-	
-	public function getAppInstallationGidAttribute()
-	{
-		return ShopifyUtils::gidRestore($this->app_installation_id, 'AppInstallation');
-	}
-	
-	public function getLaunchUrlAttribute()
-	{
-		return $this->app_launch_url;
 	}
 }
 

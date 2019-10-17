@@ -16,13 +16,17 @@ class AppRepository implements AppRepositoryInterface
 		return ShopifyApp::class;
 	}
 	
-	public function findByAppInstallId($app_id)
+	public function find($id)
 	{
-		$app_id = ShopifyUtils::gidParse($app_id);
-		return ShopifyApp::where('app_installation_id', '=', $app_id)->first();
+		return call_user_func_array([$this->model(), 'find'], [$id]);
 	}
 	
-	
+	public function findByToken($tkn)
+	{
+		return call_user_func_array([$this->model(), 'where'], ['token', '=', $tkn])->first();
+	}
+
+
 	/**
 	 * Create a new shopify app instance in our data storage
 	 * @param $app_name
@@ -31,24 +35,18 @@ class AppRepository implements AppRepositoryInterface
 	 * @param array $shop_data
 	 * @return mixed
 	 */
-	public function create($token, array $app_data, array $shop_data)
+	public function create($handle, $token, $scope)
 	{
-		$m = $this->findByAppInstallId($app_data['id']);
+		$m = $this->findByToken($token);
 		if(!$m) {
 			$model = $this->model();
 			$m = new $model();
 			unset($model);
 		}
 		
-		$m->app_installation_id = ShopifyUtils::gidParse($app_data['id']);
-		$m->app_name = Arr::get($app_data, 'current.handle');
-		$m->app_id = Arr::get($app_data, 'current.id');
-		$m->app_launch_url = $app_data['launchUrl'];
-		$m->shop_domain = $shop_data['domain'];
-		$m->shop_name = $shop_data['name'];
-		$m->shop_email = $shop_data['email'];
-		$m->shop_id = $shop_data['id'];
+		$m->shop_handle = $handle;
 		$m->token = $token;
+		$m->scope = $scope;
 		$m->save();
 		
 		return $m;

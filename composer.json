@@ -16,6 +16,7 @@
         "ext-curl": "*",
         "illuminate/support": "^6.0",
         "illuminate/config": "^6.0",
+        "illuminate/container": "^6.0",
         "illuminate/http": "^6.0",
         "illuminate/events": "^6.0",
         "onefasteuro/shopifyclient": "dev-master",

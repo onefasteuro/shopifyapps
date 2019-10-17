@@ -4,27 +4,31 @@ namespace onefasteuro\ShopifyApps\Http\Controllers;
 
 
 //app
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
-use onefasteuro\ShopifyApps\Services\AuthService;
+use onefasteuro\ShopifyApps\Nonce;
+use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
+use onefasteuro\ShopifyApps\Services\AuthServiceInterface;
 use onefasteuro\ShopifyClient\GraphClientInterface;
 use onefasteuro\ShopifyClient\GraphResponse;
+use Illuminate\Config\Repository as ConfigRepository;
 
 //middleware
-use onefasteuro\ShopifyApps\Http\AuthMiddleware;
-use onefasteuro\ShopifyApps\Http\SaveNonceStoreMiddleware;
-use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
-
+use onefasteuro\ShopifyApps\Http\Middlewares\AuthMiddleware;
+use onefasteuro\ShopifyApps\Http\Middlewares\SaveNonceStoreMiddleware;
+use onefasteuro\ShopifyApps\Http\Middlewares\SetNonceStoreMiddleware;
+use onefasteuro\ShopifyUtils\ShopifyUtils;
 
 
 class AuthController extends AbstractBaseController
 {
-	protected function getService($app_id)
+	protected $nonce;
+	protected $service;
+	
+	public function __construct(ConfigRepository $config, AppRepositoryInterface $repository, AuthServiceInterface $service, Nonce $nonce)
 	{
-		//get the right config file
-		$config = Config::get("shopifyapps.app_$app_id");
-		return App::makeWith(AuthService::class, ['config' => $config]);
+		$this->nonce = $nonce;
+		$this->service = $service;
+		parent::__construct($config, $repository);
 	}
 	
 	protected function init()
@@ -37,58 +41,55 @@ class AuthController extends AbstractBaseController
 	{
 		return view('shopifyapps::' . $view, $data);
 	}
-
-    /**
-     * begin the auth process by automatically redirecting
-     * @param Request $request
-     * @param $appname
-     * @param $shop
-     * @return mixed
-     */
-	public function redirectToAuth($app_id, $shop_domain)
+	
+	public function redirectToAuth($app_handle, $shop_domain)
 	{
-		$redirect = $this->getService($app_id)->getOAuthUrl($shop_domain);
+		$client_id = $this->config->get("shopifyapps.$app_handle.client_id");
+		$scope = $this->config->get("shopifyapps.$app_handle.scope");
+		$state = $this->nonce->retrieve();
+		$redirect_url = route('shopify.auth.complete', ['app_handle' => $app_handle]);
 		
-		
+		$redirect = $this->service->getOAuthUrl($shop_domain, $client_id, $scope, $state, $redirect_url);
+
 		return redirect()->to($redirect);
 	}
 	
 
-    public function completeAuth(Request $request, $app_id)
+    public function completeAuth(Request $request, $app_handle)
     {
-    	$service = $this->getService($app_id);
+    	$client_id = $this->config->get("shopifyapps.$app_handle.client_id");
+    	$client_secret =  $this->config->get("shopifyapps.$app_handle.client_secret");
+    	$code = $request->get('code');
+    	$shop = $request->get('shop');
     	
 	    //exchange code for a token
-		$token_response = $service->exchangeCodeForToken($request->get('shop'), $request->get('code'));
+		$token_response = $this->service->exchangeCodeForToken($shop, $code, $client_id, $client_secret);
 		
-		//grab our graph client
-		$client = resolve(GraphClientInterface::class, [
-			'domain' => $request->get('shop'),
-			'token' => $token_response->body('access_token')
-		]);
-	
-	    //get the shop info to save in our db
-	    $shop_info = $service->getShopInfo($client);
-	
+		if(!$token_response->isOk()){
+			return response()->make($token_response->body());
+		}
+		
 	    //resolve our repository
-	    $shopify_app = $this->saveShopifyApp($token_response, $shop_info);
+	    $shopify_app = $this->saveShopifyApp($request->get('shop'), $token_response);
 	    
 	    return redirect()->to($shopify_app->launch_url);
     }
 	
-	
+    
 	/**
 	 * Saves our shopify app in the data store
 	 * @param $token_response
 	 * @param GraphResponse $shop_info
 	 * @return mixed
 	 */
-    protected function saveShopifyApp($token_response, GraphResponse $shop_info)
+    protected function saveShopifyApp($domain, GraphResponse $token_response)
     {
+    	$handle = ShopifyUtils::getHandleFromDomain($domain);
+    	
     	return $this->repository->create(
-    		$token_response->body('access_token'),
-		    $shop_info->body('data.app'),
-		    $shop_info->body('data.shop')
+    		$handle,
+		    $token_response->body('access_token'),
+		    $token_response->body('scope')
 	    );
     }
 }

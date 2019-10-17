@@ -2,66 +2,58 @@
 
 namespace onefasteuro\ShopifyApps\Services;
 
-use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
 use onefasteuro\ShopifyApps\Exceptions\MissingChargeFormatException;
 use onefasteuro\ShopifyClient\GraphClientInterface;
-use onefasteuro\ShopifyApps\Exceptions\ConfigException;
 
-class BillingService extends AbstractBaseService implements ServiceInterface
+
+class BillingService implements BillingServiceInterface
 {
-	
 	const BILLING_SUBSCRIPTION = 'subscription';
 	const BILLING_ONE_TIME = 'onetime';
 	
-	protected function validateConfig(array $config)
+	protected $repository;
+	
+	public function __construct(GraphClientInterface $client)
 	{
-		$config = parent::validateConfig($config);
-		
-		//params we need to check
-		$params = [
-			'test',
-			'trial',
-			'return_url',
-			'type',
-			'plans',
-			'type',
-		];
-		
-		foreach($params as $key)
-		{
-			if(!array_key_exists($key, $config['billing'])) {
-				throw new ConfigException('The '.$key.' key is missing from the config');
-			}
-		}
-		
-		return $config;
+		$this->repository = $client;
 	}
 	
-	
-	public function authorizeCharge(GraphClientInterface $client)
+	protected function getLaunchUrl()
 	{
-		$type = $this->config('billing.type');
+		$shop_call = '{
+		app: appInstallation {
+		    launchUrl
+		  }
+		}';
 		
-		$method = 'get' . ucfirst($type) . 'Query';
+		$response = $this->repository->query($shop_call);
+		
+		return $response->body('data.app.launchUrl');
+	}
+	
+	protected static function assertChargeMethod($type)
+	{
+		return 'authorize' . ucfirst($type);
+	}
+	
+	public function authorizeCharge(array $billing_config)
+	{
+		$method = static::assertChargeMethod($billing_config['type']);
 		
 		if(!method_exists(__CLASS__, $method)) {
-			throw new MissingChargeFormatException('There is no charge of type: '.$type);
+			throw MissingChargeFormatException::factory($billing_config['type']);
 		}
 		
-		$call = static::$method();
+		//go back to the launch url
+		$redirect_url = $this->getLaunchUrl();
 		
-		$line_items = $this->getPlan();
+		$response = static::$method($this->graph_client, $redirect_url, $billing_config);
 		
-		$params = $this->getChargeParams();
-		
-		$call = sprintf($call, $line_items);
-		
-		$response = $client->query($call, $params);
-		
+		dd($response);
 		return $response;
 	}
 	
-	protected static function getSubscriptionQuery()
+	protected static function authorizeSubscription(GraphClientInterface $client, $redirect_url, array $billing_config = [])
 	{
 		$call =  'mutation($trial: Int, $test: Boolean, $name: String!, $return: URL!) {
 			  bill: appSubscriptionCreate(
@@ -82,11 +74,33 @@ class BillingService extends AbstractBaseService implements ServiceInterface
 			  }
 			}';
 		
-		return $call;
+		
+		$output = '';
+		
+		foreach($billing_config['plans'] as $key => $item) {
+			$output .= '{
+				plan: {
+					appRecurringPricingDetails: {
+			            price: { amount: ' . $item['amount'] . ', currencyCode: ' . $item['currency'] . ' }
+			        }
+				}
+			}';
+		}
+		
+		$call = sprintf($call, $output);
+		
+		$params = [
+			'test' => $billing_config['test'],
+			'trial' => $billing_config['trial'],
+			'return' => $redirect_url,
+			'name' => $billing_config['name'],
+		];
+		
+		return $client->query($call, $params);
 	}
 	
 	
-	protected function getOnetimeQuery()
+	protected function authorizeOnetime(GraphClientInterface $client, $redirect_url, array $billing_config = [])
 	{
 		$call =  'mutation($trial: Int, $test: Boolean, $price: MoneyInput!, $name: String!, $return: URL!) {
 			  bill: appPurchaseOneTimeCreate(
@@ -107,39 +121,6 @@ class BillingService extends AbstractBaseService implements ServiceInterface
 			  }
 			}';
 		
-		return $call;
-	}
-	
-	
-	
-	protected function getChargeParams()
-	{
-		$params = [
-			'test' => $this->config('billing.test'),
-			'trial' => $this->config('billing.trial'),
-			'name' => $this->config('billing.name'),
-			'return' => 'https://bpisports.com',
-		];
-		return $params;
-	}
-	
-	
-	
-	protected function getPlan()
-	{
-		$items = $this->config('billing.plans');
-		$output = '';
-		
-		foreach($items as $key => $item) {
-			$output .= '{
-				plan: {
-					appRecurringPricingDetails: {
-			            price: { amount: ' . $item['amount'] . ', currencyCode: ' . $item['currency'] . ' }
-			        }
-				}
-			}';
-		}
-		
-		return $output;
+		return $client->query($call, $params);
 	}
 }

@@ -2,49 +2,33 @@
 
 namespace onefasteuro\ShopifyApps\Http\Controllers;
 
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\App;
-
-use onefasteuro\ShopifyApps\Services\BillingService;
-use onefasteuro\ShopifyClient\Exceptions\NotReadyException;
+use Illuminate\Config\Repository as ConfigRepository;
+use Illuminate\Http\Request;
+use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
 use onefasteuro\ShopifyClient\GraphClientInterface;
+use onefasteuro\ShopifyApps\Services\BillingServiceInterface;
+use Illuminate\Container\Container;
 
 
 class BillingController extends AbstractBaseController
 {
-	protected function getService($app_id)
-	{
-		//get the right config file
-		$config = Config::get("shopifyapps.app_$app_id");
-		return App::makeWith(BillingService::class, ['config' => $config]);
-	}
-	
-	protected function init()
-	{
-	
-	}
-	
 	/**
 	 * Redirects the user to their shopify store to authorize or decline the charge
 	 * @param $app_installation_id
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function redirectToBill($app_installation_id)
+	public function redirectToBill($app_handle, $id)
 	{
-		$model = $this->repository->findByAppInstallId($app_installation_id);
+		$shopify_app = $this->repository->find($id);
 		
-		if(!$model) {
-			//TODO
-		}
+		$params = [
+			'domain' => $shopify_app->myshopify_domain,
+			'token' => $shopify_app->token,
+		];
+		$service = Container::getInstance()->makeWith(BillingServiceInterface::class, $params);
 		
-		$service = $this->getService($model->app_id);
 		
-		$client = resolve(GraphClientInterface::class, [
-			'token' => $model->token,
-			'domain' => $model->shop_domain,
-		]);
-		
-		$response = $service->authorizeCharge($client);
+		$response = $service->authorizeCharge( $this->config->get("shopifyapps.$app_handle.billing") );
 		
 		//go to the authorization code
 		return redirect()->to($response->body('data.bill.confirmationUrl'));
@@ -52,9 +36,9 @@ class BillingController extends AbstractBaseController
 	
 	
 	
-	public function completeBilling($app_installation_id)
+	public function completeBilling($app_handle, $id)
 	{
-		$model = $this->repository->findByAppInstallId($app_installation_id);
+		$model = $shopify_app = $this->repository->find($id);
 		
 		if(!$model) {
 			//TODO

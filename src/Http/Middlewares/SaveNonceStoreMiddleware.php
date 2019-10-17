@@ -1,7 +1,7 @@
 <?php
 
-namespace onefasteuro\ShopifyApps\Http;
 
+namespace onefasteuro\ShopifyApps\Http\Middlewares;
 
 class SaveNonceStoreMiddleware extends SetNonceStoreMiddleware
 {

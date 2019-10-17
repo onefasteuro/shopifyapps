@@ -2,26 +2,10 @@
 
 namespace onefasteuro\ShopifyApps;
 
+
 use Illuminate\Support\ServiceProvider;
-
-use onefasteuro\ShopifyApps\Services\BillingService;
-use onefasteuro\ShopifyApps\Services\AuthService;
-use onefasteuro\ShopifyApps\Services\OAuthRequestValidator;
-
-
-use onefasteuro\ShopifyApps\Http\Controllers\BillingController;
-
-//middleware
-use onefasteuro\ShopifyApps\Http\SetNonceStoreMiddleware;
-use onefasteuro\ShopifyApps\Http\AuthMiddleware;
-use onefasteuro\ShopifyApps\Http\SaveNonceStoreMiddleware;
-
-//repositories
-use onefasteuro\ShopifyApps\Repositories\AppRepository;
-use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
-
-//controllers
-use onefasteuro\ShopifyApps\Http\Controllers\AuthController;
+use onefasteuro\ShopifyApps\Repositories\GraphqlRepository;
+use onefasteuro\ShopifyClient\GraphClientInterface;
 
 
 class ShopifyAppsServiceProvider extends ServiceProvider
@@ -53,6 +37,16 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 	protected function loadEvents()
 	{
 		$events = $this->app['events'];
+		
+		//adjust the active config
+		$events->listen(\Illuminate\Routing\Events\RouteMatched::class, function(\Illuminate\Routing\Events\RouteMatched $event){
+			$config = resolve('config');
+			$route_name = $event->route->getName();
+			if(strpos($route_name, 'shopify.billing.') or strpos($route_name, 'shopify.auth.')) {
+				$app_id = $event->route->parameter('app_id');
+				//$config->set("shopifyapps.default", "shopifyapps.app_$app_id");
+			}
+		});
 		
 		//event if needed
 		$events->listen(Events\TokenWasReceived::class, function(Events\TokenWasReceived $event){
@@ -86,39 +80,28 @@ class ShopifyAppsServiceProvider extends ServiceProvider
         	return new Nonce;
         });
         
-	
-	    $this->app->bind(AppRepositoryInterface::class, function(){
-		    return new AppRepository;
+	    $this->app->bind(Repositories\AppRepositoryInterface::class, function(){
+		    return new Repositories\AppRepository;
 	    });
 	
-	    $this->app->singleton(AuthService::class, function($app, $params = []){
-		
-	    	$service = new AuthService($app[Nonce::class], $app['events']);
-	    	
-		    if(array_key_exists('config', $params)) {
-			    $config = $params['config'];
-			    $service->setAppConfig($config);
-		    }
-	    	
-		    return $service;
+	    $this->app->singleton(Services\AuthServiceInterface::class, function($app){
+	    	return new Services\AuthService;
 	    });
 	    
 	    
-	    $this->app->singleton(BillingService::class, function($app, $params = []){
+	    $this->app->singleton(Services\BillingServiceInterface::class, function($app, $params = []){
 		
-		    $service = new BillingService($app['events']);
+		    $client = $app[GraphClientInterface::class];
 		
-		    if(array_key_exists('config', $params)) {
-			    $config = $params['config'];
-			    $service->setAppConfig($config);
+		    if(count($params) === 2) {
+			    $client->init($params['domain'], $params['token']);
 		    }
-		    
-		    return $service;
+	    	
+		    return new Services\BillingService($client);
 	    });
 	    
-	    $this->app->singleton(OAuthRequestValidator::class, function($app) {
-		    $config = $app['config']->get('shopifyapps');
-		    return new OAuthRequestValidator($config, $app[Nonce::class]);
+	    $this->app->singleton(Services\OAuthRequestValidator::class, function($app) {
+		    return new Services\OAuthRequestValidator;
 	    });
 	
 	
@@ -131,27 +114,27 @@ class ShopifyAppsServiceProvider extends ServiceProvider
     
     protected function registerMiddleware()
     {
-	    $this->app->singleton(AuthMiddleware::class,function($app){
-		    return new AuthMiddleware($app[Nonce::class]);
+	    $this->app->singleton(Http\Middlewares\AuthMiddleware::class,function($app){
+		    return new Http\Middlewares\AuthMiddleware($app[Nonce::class]);
 	    });
 	
-	    $this->app->singleton(SetNonceStoreMiddleware::class, function($app){
-		    return new SetNonceStoreMiddleware($app[Nonce::class]);
+	    $this->app->singleton(Http\Middlewares\SetNonceStoreMiddleware::class, function($app){
+		    return new Http\Middlewares\SetNonceStoreMiddleware($app[Nonce::class]);
 	    });
 	
-	    $this->app->singleton(SaveNonceStoreMiddleware::class,function($app){
-		    return new SaveNonceStoreMiddleware($app[Nonce::class]);
+	    $this->app->singleton(Http\Middlewares\SaveNonceStoreMiddleware::class,function($app){
+		    return new Http\Middlewares\SaveNonceStoreMiddleware($app[Nonce::class]);
 	    });
     }
     
     protected function registerControllers()
     {
-	    $this->app->singleton(AuthController::class, function($app){
-		    return new AuthController( $app[AppRepositoryInterface::class] );
+	    $this->app->singleton(Http\Controllers\AuthController::class, function($app){
+		    return new Http\Controllers\AuthController($app['config'], $app[Repositories\AppRepositoryInterface::class], $app[Services\AuthServiceInterface::class], $app[Nonce::class] );
 	    });
 	
-	    $this->app->singleton(BillingController::class, function($app){
-		    return new BillingController( $app[AppRepositoryInterface::class] );
+	    $this->app->singleton(Http\Controllers\BillingController::class, function($app){
+		    return new Http\Controllers\BillingController($app['config'], $app[Repositories\AppRepositoryInterface::class]);
 	    });
     }
     

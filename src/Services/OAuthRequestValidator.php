@@ -4,19 +4,9 @@ namespace onefasteuro\ShopifyApps\Services;
 
 class OAuthRequestValidator
 {
-    protected $config = [];
-    protected $nonce;
 
-    public function __construct(array $config, \onefasteuro\ShopifyApps\Nonce $nonce)
+    public function assertNonce(\Illuminate\Http\Request $request, $nonce)
     {
-        $this->config = $config;
-        $this->nonce = $nonce;
-    }
-
-    public function assertNonce(\Illuminate\Http\Request $request)
-    {
-        $nonce = $this->nonce->retrieve();
-
         //nonce do not match, error out
         return $nonce === $request->query('state');
     }
@@ -28,7 +18,7 @@ class OAuthRequestValidator
     }
 
 
-	public function assertHMAC(\Illuminate\Http\Request $request)
+	public function assertHMAC(\Illuminate\Http\Request $request, $secret)
     {
         $query = $request->query();
 
@@ -46,9 +36,7 @@ class OAuthRequestValidator
 
 
         $data = urldecode(http_build_query($query));
-
-
-        $secret = $this->config['client_secret'];
+        
 
         $calc = hash_hmac('sha256', $data, $secret);
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace onefasteuro\ShopifyApps\Http;
+namespace onefasteuro\ShopifyApps\Http\Middlewares;
 
 
 
