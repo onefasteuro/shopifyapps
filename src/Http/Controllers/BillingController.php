@@ -2,11 +2,7 @@
 
 namespace onefasteuro\ShopifyApps\Http\Controllers;
 
-use Illuminate\Config\Repository as ConfigRepository;
-use Illuminate\Http\Request;
-use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
-use onefasteuro\ShopifyClient\GraphClientInterface;
-use onefasteuro\ShopifyApps\Services\BillingServiceInterface;
+
 use Illuminate\Container\Container;
 
 
@@ -25,7 +21,7 @@ class BillingController extends AbstractBaseController
 			'domain' => $shopify_app->myshopify_domain,
 			'token' => $shopify_app->token,
 		];
-		$service = Container::getInstance()->makeWith(BillingServiceInterface::class, $params);
+		$service = Container::getInstance()->makeWith('shopifyapps.billing.service', $params);
 		
 		
 		$response = $service->authorizeCharge( $this->config->get("shopifyapps.$app_handle.billing") );

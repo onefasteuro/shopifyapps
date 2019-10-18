@@ -90,6 +90,7 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 
 	    	return $service;
 	    });
+        $this->app->alias(Services\AuthServiceInterface::class, 'shopifyapps.auth.service');
 	    
 	    
 	    $this->app->singleton(Services\BillingServiceInterface::class, function($app, $params = []){
@@ -102,6 +103,7 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 	    	
 		    return new Services\BillingService($client);
 	    });
+        $this->app->alias(Services\AuthServiceInterface::class, 'shopifyapps.billing.service');
 	
 	
 	    //middleware
@@ -116,14 +118,17 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 	    $this->app->singleton(Http\Middlewares\AuthMiddleware::class,function($app){
 		    return new Http\Middlewares\AuthMiddleware($app[Nonce::class]);
 	    });
+        $this->app->alias(Http\Middlewares\AuthMiddleware::class, 'shopifyapps.middleware.auth');
 	
 	    $this->app->singleton(Http\Middlewares\SetNonceStoreMiddleware::class, function($app){
 		    return new Http\Middlewares\SetNonceStoreMiddleware($app[Nonce::class]);
 	    });
+        $this->app->alias(Http\Middlewares\SetNonceStoreMiddleware::class, 'shopifyapps.middleware.setnonce');
 	
 	    $this->app->singleton(Http\Middlewares\SaveNonceStoreMiddleware::class,function($app){
 		    return new Http\Middlewares\SaveNonceStoreMiddleware($app[Nonce::class]);
 	    });
+        $this->app->alias(Http\Middlewares\SaveNonceStoreMiddleware::class, 'shopifyapps.middleware.savenonce');
     }
     
     protected function registerControllers()

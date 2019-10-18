@@ -5,7 +5,6 @@ namespace onefasteuro\ShopifyApps\Http\Middlewares;
 
 
 use Illuminate\Container\Container;
-use onefasteuro\ShopifyApps\Services\AuthService;
 
 class AuthMiddleware extends SaveNonceStoreMiddleware
 {
@@ -19,7 +18,7 @@ class AuthMiddleware extends SaveNonceStoreMiddleware
 		
 		$config = $container->make('config')->get("shopifyapps.$hndl");
 
-		$validator = $container->make(AuthService::class);
+		$validator = $container->make('shopifyapps.auth.service');
 
 		if(!$validator->assertNonce($request->query('state'), $this->nonce->retrieve())){
 			return abort(403, 'Could not validate the request. State mismatch.');

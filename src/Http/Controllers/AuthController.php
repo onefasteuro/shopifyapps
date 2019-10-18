@@ -7,7 +7,6 @@ namespace onefasteuro\ShopifyApps\Http\Controllers;
 use Illuminate\Http\Request;
 use onefasteuro\ShopifyApps\Nonce;
 use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
-use onefasteuro\ShopifyApps\Services\AuthServiceInterface;
 use onefasteuro\ShopifyClient\GraphResponse;
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Container\Container;
@@ -43,7 +42,7 @@ class AuthController extends AbstractBaseController
 	
 	public function redirectToAuth($app_handle, $shop_domain)
 	{
-        $service = Container::getInstance()->make(AuthServiceInterface::class);
+        $service = Container::getInstance()->make('shopifyapps.auth.service');
 
 		$client_id = $this->config->get("shopifyapps.$app_handle.client_id");
 		$scope = $this->config->get("shopifyapps.$app_handle.scope");
@@ -59,7 +58,7 @@ class AuthController extends AbstractBaseController
 
     public function completeAuth(Request $request, $app_handle)
     {
-        $service = Container::getInstance()->make(AuthServiceInterface::class);
+        $service = Container::getInstance()->make('shopifyapps.auth.service');
 
     	$client_id = $this->config->get("shopifyapps.$app_handle.client_id");
     	$client_secret =  $this->config->get("shopifyapps.$app_handle.client_secret");
