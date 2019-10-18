@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 use onefasteuro\ShopifyApps\Nonce;
 use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
 use onefasteuro\ShopifyApps\Services\AuthServiceInterface;
-use onefasteuro\ShopifyClient\GraphClientInterface;
 use onefasteuro\ShopifyClient\GraphResponse;
 use Illuminate\Config\Repository as ConfigRepository;
+use Illuminate\Container\Container;
 
 //middleware
 use onefasteuro\ShopifyApps\Http\Middlewares\AuthMiddleware;
@@ -19,15 +19,14 @@ use onefasteuro\ShopifyApps\Http\Middlewares\SetNonceStoreMiddleware;
 use onefasteuro\ShopifyUtils\ShopifyUtils;
 
 
+
 class AuthController extends AbstractBaseController
 {
 	protected $nonce;
-	protected $service;
 	
-	public function __construct(ConfigRepository $config, AppRepositoryInterface $repository, AuthServiceInterface $service, Nonce $nonce)
+	public function __construct(ConfigRepository $config, AppRepositoryInterface $repository, Nonce $nonce)
 	{
 		$this->nonce = $nonce;
-		$this->service = $service;
 		parent::__construct($config, $repository);
 	}
 	
@@ -44,12 +43,15 @@ class AuthController extends AbstractBaseController
 	
 	public function redirectToAuth($app_handle, $shop_domain)
 	{
+        $service = Container::getInstance()->make(AuthServiceInterface::class);
+
 		$client_id = $this->config->get("shopifyapps.$app_handle.client_id");
 		$scope = $this->config->get("shopifyapps.$app_handle.scope");
 		$state = $this->nonce->retrieve();
 		$redirect_url = route('shopify.auth.complete', ['app_handle' => $app_handle]);
-		
-		$redirect = $this->service->getOAuthUrl($shop_domain, $client_id, $scope, $state, $redirect_url);
+
+
+		$redirect = $service->getOAuthUrl($shop_domain, $client_id, $scope, $state, $redirect_url);
 
 		return redirect()->to($redirect);
 	}
@@ -57,13 +59,15 @@ class AuthController extends AbstractBaseController
 
     public function completeAuth(Request $request, $app_handle)
     {
+        $service = Container::getInstance()->make(AuthServiceInterface::class);
+
     	$client_id = $this->config->get("shopifyapps.$app_handle.client_id");
     	$client_secret =  $this->config->get("shopifyapps.$app_handle.client_secret");
     	$code = $request->get('code');
     	$shop = $request->get('shop');
     	
 	    //exchange code for a token
-		$token_response = $this->service->exchangeCodeForToken($shop, $code, $client_id, $client_secret);
+		$token_response = $service->exchangeCodeForToken($shop, $code, $client_id, $client_secret);
 		
 		if(!$token_response->isOk()){
 			return response()->make($token_response->body());

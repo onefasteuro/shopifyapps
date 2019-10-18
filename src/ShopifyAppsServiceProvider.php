@@ -85,7 +85,10 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 	    });
 	
 	    $this->app->singleton(Services\AuthServiceInterface::class, function($app){
-	    	return new Services\AuthService;
+
+	        $service = new Services\AuthService;
+
+	    	return $service;
 	    });
 	    
 	    
@@ -98,10 +101,6 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 		    }
 	    	
 		    return new Services\BillingService($client);
-	    });
-	    
-	    $this->app->singleton(Services\OAuthRequestValidator::class, function($app) {
-		    return new Services\OAuthRequestValidator;
 	    });
 	
 	
@@ -130,7 +129,7 @@ class ShopifyAppsServiceProvider extends ServiceProvider
     protected function registerControllers()
     {
 	    $this->app->singleton(Http\Controllers\AuthController::class, function($app){
-		    return new Http\Controllers\AuthController($app['config'], $app[Repositories\AppRepositoryInterface::class], $app[Services\AuthServiceInterface::class], $app[Nonce::class] );
+		    return new Http\Controllers\AuthController($app['config'], $app[Repositories\AppRepositoryInterface::class], $app[Nonce::class] );
 	    });
 	
 	    $this->app->singleton(Http\Controllers\BillingController::class, function($app){
