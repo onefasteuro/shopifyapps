@@ -14,7 +14,7 @@ class AuthMiddleware extends SaveNonceStoreMiddleware
 	    $container =  Container::getInstance();
 
 
-		$hndl = $request->route()->parameter('shop_handle');
+		$hndl = $request->route()->parameter('app_handle');
 		
 		$config = $container->make('config')->get("shopifyapps.$hndl");
 

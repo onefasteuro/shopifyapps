@@ -677,12 +677,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyclient.git",
-                "reference": "fa11716a2893bb29b46fbf26b33a48a04bafb14a"
+                "reference": "340dd73250aa13432de4889f04440d8d6863c22c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/fa11716a2893bb29b46fbf26b33a48a04bafb14a",
-                "reference": "fa11716a2893bb29b46fbf26b33a48a04bafb14a",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/340dd73250aa13432de4889f04440d8d6863c22c",
+                "reference": "340dd73250aa13432de4889f04440d8d6863c22c",
                 "shasum": ""
             },
             "require": {
@@ -732,7 +732,7 @@
                 "laravel",
                 "shopify"
             ],
-            "time": "2019-10-16T18:46:34+00:00"
+            "time": "2019-10-18T15:38:20+00:00"
         },
         {
             "name": "onefasteuro/shopifyutils",
@@ -740,12 +740,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyutils.git",
-                "reference": "0b6777495e465929385a158de4218d5de7bc6332"
+                "reference": "ddd24f058f36220d616adb166060a7a5e02341d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/0b6777495e465929385a158de4218d5de7bc6332",
-                "reference": "0b6777495e465929385a158de4218d5de7bc6332",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/ddd24f058f36220d616adb166060a7a5e02341d0",
+                "reference": "ddd24f058f36220d616adb166060a7a5e02341d0",
                 "shasum": ""
             },
             "require": {
@@ -780,7 +780,7 @@
             "keywords": [
                 "shopify"
             ],
-            "time": "2019-10-17T17:25:11+00:00"
+            "time": "2019-10-18T15:38:59+00:00"
         },
         {
             "name": "opis/closure",
