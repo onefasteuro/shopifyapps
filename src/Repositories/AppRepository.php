@@ -44,7 +44,7 @@ class AppRepository implements AppRepositoryInterface
 			unset($model);
 		}
 		
-		$m->shop_handle = $handle;
+		$m->app_handle = $handle;
 		$m->token = $token;
 		$m->scope = $scope;
 		$m->save();

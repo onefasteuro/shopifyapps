@@ -69,12 +69,14 @@ class AuthController extends AbstractBaseController
 		$token_response = $service->exchangeCodeForToken($shop, $code, $client_id, $client_secret);
 		
 		if(!$token_response->isOk()){
-			return response()->make($token_response->body());
+			return response()->make($token_response->getBody());
 		}
 		
 	    //resolve our repository
 	    $shopify_app = $this->saveShopifyApp($request->get('shop'), $token_response);
 	    
+		dd($shopify_app);
+		
 	    return redirect()->to($shopify_app->launch_url);
     }
 	
@@ -91,8 +93,8 @@ class AuthController extends AbstractBaseController
     	
     	return $this->repository->create(
     		$handle,
-		    $token_response->body('access_token'),
-		    $token_response->body('scope')
+		    $token_response->getBody('access_token'),
+		    $token_response->getBody('scope')
 	    );
     }
 }
