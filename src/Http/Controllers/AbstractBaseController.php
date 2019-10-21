@@ -4,8 +4,8 @@ namespace onefasteuro\ShopifyApps\Http\Controllers;
 
 
 use onefasteuro\ShopifyApps\Repositories\AppRepositoryInterface;
-use onefasteuro\ShopifyApps\Services\ServiceInterface;
 use Illuminate\Config\Repository as ConfigRepository;
+use onefasteuro\ShopifyClient\AdminClientInterface;
 
 abstract class AbstractBaseController extends \Illuminate\Routing\Controller
 {
@@ -20,6 +20,10 @@ abstract class AbstractBaseController extends \Illuminate\Routing\Controller
 		if(method_exists($this, 'init')) {
 			$this->init();
 		}
+	}
 
+	protected function getHttpClient($domain, $token)
+	{
+		return resolve(AdminClientInterface::class, ['domain' => $domain, 'token' => $token]);
 	}
 }

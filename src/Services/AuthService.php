@@ -6,26 +6,27 @@ namespace onefasteuro\ShopifyApps\Services;
 use onefasteuro\ShopifyClient\GraphResponse;
 use onefasteuro\ShopifyUtils\ShopifyUtils;
 use Illuminate\Support\Facades\URL;
+use Requests as HttpClient;
 
-class AuthService implements AuthServiceInterface
+class AuthService
 {
 	const OAUTH_URL = 'https://%s/admin/oauth/authorize?client_id=%s&scope=%s&state=%s&redirect_uri=%s';
 	const TOKEN_URL = 'https://%s/admin/oauth/access_token';
 
 
-    public function assertNonce($request_state, $nonce)
+    public static function assertNonce($request_state, $nonce)
     {
         //nonce do not match, error out
         return $nonce === $request_state;
     }
 
-    public function assertDomain($domain)
+    public static function assertDomain($domain)
     {
         return preg_match('/[a-zA-Z0-9\-]+\.myshopify\.com/', $domain);
     }
 
 
-    public function assertHMAC($query, $secret)
+    public static function assertHMAC($query, $secret)
     {
         $hmac = $query['hmac'];
         if(array_key_exists('hmac', $query) ) {
@@ -49,7 +50,7 @@ class AuthService implements AuthServiceInterface
     }
 
 
-    public function getOAuthUrl($shop_domain, $client_id, $scope, $state, $redirect_url)
+    public static function getOAuthUrl($shop_domain, $client_id, $scope, $state, $redirect_url)
     {
     	$domain = ShopifyUtils::formatDomain($shop_domain);
         
@@ -60,7 +61,7 @@ class AuthService implements AuthServiceInterface
     }
     
     
-    public function exchangeCodeForToken($domain, $code, $client_id, $client_secret)
+    public static function exchangeCodeForToken($domain, $code, $client_id, $client_secret)
     {
     	$domain = ShopifyUtils::formatDomain($domain);
     	
@@ -72,7 +73,7 @@ class AuthService implements AuthServiceInterface
 	    
 	    $url = sprintf(static::TOKEN_URL, $domain);
 	    
-	    $response = \Requests::post($url, [], $payload);
+	    $response = HttpClient::post($url, [], $payload);
 	    return new GraphResponse($response);
     }
 

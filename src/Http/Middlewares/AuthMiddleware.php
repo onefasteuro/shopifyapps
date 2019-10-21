@@ -5,6 +5,7 @@ namespace onefasteuro\ShopifyApps\Http\Middlewares;
 
 
 use Illuminate\Container\Container;
+use onefasteuro\ShopifyApps\Services\AuthService;
 
 class AuthMiddleware extends SaveNonceStoreMiddleware
 {
@@ -17,20 +18,19 @@ class AuthMiddleware extends SaveNonceStoreMiddleware
 		$hndl = $request->route()->parameter('app_handle');
 		
 		$config = $container->make('config')->get("shopifyapps.$hndl");
-
-		$validator = $container->make('shopifyapps.auth.service');
-
-		if(!$validator->assertNonce($request->query('state'), $this->nonce->retrieve())){
+		
+		
+		if(!AuthService::assertNonce($request->query('state'), $this->nonce->retrieve())){
 			return abort(403, 'Could not validate the request. State mismatch.');
 		}
 		
 		//check if the HMAC signature matches the request
-		if(!$validator->assertHMAC($request->query(), $config['client_secret'])) {
+		if(!AuthService::assertHMAC($request->query(), $config['client_secret'])) {
 			return abort(403, 'Could not validate the request. HMAC mismatch.');
 		}
 		
 		//Check if the domain matches
-		if(!$validator->assertDomain($request->get('shop'))) {
+		if(!AuthService::assertDomain($request->get('shop'))) {
 			return abort(403, 'Could not validate the request. Domain mismatch.');
 		}
 		

@@ -5,6 +5,7 @@ use onefasteuro\ShopifyApps\Services\BillingService;
 
 return [
 	
+
 	
 	'appname' => [
 		'client_id' => 'YOUR CLIENT ID',

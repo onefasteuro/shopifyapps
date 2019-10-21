@@ -10,25 +10,28 @@ class ShopifyApp extends Model
 {
 	protected $table = 'shopify_apps';
 	
-	
-	public function bills()
-	{
-		return $this->hasMany(ShopifyBilling::class, 'app_id','id')->withDefault();
-	}
+	protected $appends = [
+		'app_gid', 'app_installation_gid'
+	];
 	
 	public function setAppInstallationIdAttribute($value)
 	{
 		$this->attributes['app_installation_id'] = ShopifyUtils::gidParse($value);
 	}
 	
-	public function getMyshopifyDomainAttribute()
+	public function setAppIdAttribute($value)
 	{
-		return sprintf('https://%s.myshopify.com', $this->shop_handle);
+		$this->attributes['app_id'] = ShopifyUtils::gidParse($value);
 	}
 	
-	public function getShopGidAttribute()
+	public function getAppGidAttribute()
 	{
-		return ShopifyUtils::gidRestore($this->shop_id, 'Shop');
+		return ShopifyUtils::gidRestore($this->app_id, 'App');
+	}
+	
+	public function getAppInstallationGidAttribute()
+	{
+		return ShopifyUtils::gidRestore($this->app_installation_id, 'AppInstallation');
 	}
 }
 

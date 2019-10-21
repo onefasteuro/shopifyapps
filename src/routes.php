@@ -30,17 +30,17 @@ Route::group(['prefix' => 'shopify', 'middleware' => ['web']], function () use(&
 		->where('shop_domain', '[a-z\-0-9]+');
 	
 
-	Route::get('billing/{app_handle}/{id}', [
+	Route::get('billing/{app_handle}/{app_installation_id}', [
 		'as' => 'shopify.billing.redirect',
 		'uses' => $namespace . 'BillingController@redirectToBill',
 	])->where('app_handle', '[a-z\-0-9]+')
-		->where('id', '[0-9]+');
+		->where('app_installation_id', '[0-9]+');
 	
-	Route::get('billing/{app_handle}/{id}/complete', [
+	Route::get('billing/{app_handle}/{app_installation_id}/complete', [
 		'as' => 'shopify.billing.complete',
 		'uses' => $namespace . 'BillingController@completeBilling',
 	])->where('app_handle', '[a-z\-0-9]+')
-		->where('id', '[0-9]+');
+		->where('app_installation_id', '[0-9]+');
 	
 	
 

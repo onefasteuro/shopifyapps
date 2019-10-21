@@ -2,58 +2,64 @@
 
 namespace onefasteuro\ShopifyApps\Services;
 
+use onefasteuro\ShopifyApps\Exceptions\ConfigException;
 use onefasteuro\ShopifyApps\Exceptions\MissingChargeFormatException;
-use onefasteuro\ShopifyClient\GraphClientInterface;
+use onefasteuro\ShopifyClient\AdminClientInterface;
 
-
-class BillingService implements BillingServiceInterface
+class BillingService
 {
 	const BILLING_SUBSCRIPTION = 'subscription';
 	const BILLING_ONE_TIME = 'onetime';
 	
-	protected $repository;
 	
-	public function __construct(GraphClientInterface $client)
+	
+	protected static function validateParams(array $params)
 	{
-		$this->repository = $client;
+		$verif = [
+			'trial',
+			'test',
+			'name',
+			'type',
+			'plans'
+		];
+		
+		foreach($verif as $value) {
+			if(!array_key_exists($value, $params)) {
+				throw ConfigException::factory($value);
+			}
+		}
+		
+		if($params['type'] != static::BILLING_SUBSCRIPTION or $params['type'] != static::BILLING_ONE_TIME) {
+			throw MissingChargeFormatException::factory($params['type']);
+		}
+		
+		return true;
 	}
 	
-	protected function getLaunchUrl()
-	{
-		$shop_call = '{
-		app: appInstallation {
-		    launchUrl
-		  }
-		}';
-		
-		$response = $this->repository->query($shop_call);
-		
-		return $response->body('data.app.launchUrl');
-	}
 	
 	protected static function assertChargeMethod($type)
 	{
 		return 'authorize' . ucfirst($type);
 	}
 	
-	public function authorizeCharge(array $billing_config)
+	
+	public static function authorizeCharge(AdminClientInterface $client, array $billing_config)
 	{
 		$method = static::assertChargeMethod($billing_config['type']);
 		
-		if(!method_exists(__CLASS__, $method)) {
-			throw MissingChargeFormatException::factory($billing_config['type']);
-		}
+		$query_call = static::$method($billing_config);
 		
-		//go back to the launch url
-		$redirect_url = $this->getLaunchUrl();
+		$query_params = [
+			'test' => $billing_config['test'],
+			'trial' => $billing_config['trial'],
+			'return' => $billing_config['return_url'],
+			'name' => $billing_config['name'],
+		];
 		
-		$response = static::$method($this->graph_client, $redirect_url, $billing_config);
-		
-		dd($response);
-		return $response;
+		return $client->query($query_call, $query_params);
 	}
 	
-	protected static function authorizeSubscription(GraphClientInterface $client, $redirect_url, array $billing_config = [])
+	protected static function authorizeSubscription(array $billing_config)
 	{
 		$call =  'mutation($trial: Int, $test: Boolean, $name: String!, $return: URL!) {
 			  bill: appSubscriptionCreate(
@@ -89,18 +95,11 @@ class BillingService implements BillingServiceInterface
 		
 		$call = sprintf($call, $output);
 		
-		$params = [
-			'test' => $billing_config['test'],
-			'trial' => $billing_config['trial'],
-			'return' => $redirect_url,
-			'name' => $billing_config['name'],
-		];
-		
-		return $client->query($call, $params);
+		return $call;
 	}
 	
 	
-	protected function authorizeOnetime(GraphClientInterface $client, $redirect_url, array $billing_config = [])
+	protected function authorizeOnetime(array $billing_config = [])
 	{
 		$call =  'mutation($trial: Int, $test: Boolean, $price: MoneyInput!, $name: String!, $return: URL!) {
 			  bill: appPurchaseOneTimeCreate(
@@ -121,6 +120,6 @@ class BillingService implements BillingServiceInterface
 			  }
 			}';
 		
-		return $client->query($call, $params);
+		return $call;
 	}
 }

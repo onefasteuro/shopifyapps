@@ -4,8 +4,7 @@ namespace onefasteuro\ShopifyApps;
 
 
 use Illuminate\Support\ServiceProvider;
-use onefasteuro\ShopifyApps\Repositories\GraphqlRepository;
-use onefasteuro\ShopifyClient\GraphClientInterface;
+use onefasteuro\ShopifyApps\Services\BillingService;
 
 
 class ShopifyAppsServiceProvider extends ServiceProvider
@@ -17,8 +16,6 @@ class ShopifyAppsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-    	require_once __DIR__.'/helpers.php';
-    	
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
@@ -37,17 +34,7 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 	protected function loadEvents()
 	{
 		$events = $this->app['events'];
-		
-		//adjust the active config
-		$events->listen(\Illuminate\Routing\Events\RouteMatched::class, function(\Illuminate\Routing\Events\RouteMatched $event){
-			$config = resolve('config');
-			$route_name = $event->route->getName();
-			if(strpos($route_name, 'shopify.billing.') or strpos($route_name, 'shopify.auth.')) {
-				$app_id = $event->route->parameter('app_id');
-				//$config->set("shopifyapps.default", "shopifyapps.app_$app_id");
-			}
-		});
-		
+
 		//event if needed
 		$events->listen(Events\TokenWasReceived::class, function(Events\TokenWasReceived $event){
 			$token = $event->token;
@@ -83,28 +70,10 @@ class ShopifyAppsServiceProvider extends ServiceProvider
 	    $this->app->bind(Repositories\AppRepositoryInterface::class, function(){
 		    return new Repositories\AppRepository;
 	    });
-	
-	    $this->app->singleton(Services\AuthServiceInterface::class, function($app){
-
-	        $service = new Services\AuthService;
-
-	    	return $service;
-	    });
-        $this->app->alias(Services\AuthServiceInterface::class, 'shopifyapps.auth.service');
 	    
-	    
-	    $this->app->singleton(Services\BillingServiceInterface::class, function($app, $params = []){
-		
-		    $client = $app[GraphClientInterface::class];
-		
-		    if(count($params) === 2) {
-			    $client->init($params['domain'], $params['token']);
-		    }
-	    	
-		    return new Services\BillingService($client);
+	    $this->app->bind(Services\BillingService::class, function($app, $params){
+	    	return new BillingService($params['client'], $params['config']);
 	    });
-        $this->app->alias(Services\AuthServiceInterface::class, 'shopifyapps.billing.service');
-	
 	
 	    //middleware
 		$this->registerMiddleware();
