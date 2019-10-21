@@ -606,16 +606,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.25.2",
+            "version": "2.25.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "443fe5f1498147e0fbc792142b5dc43e2e8a533f"
+                "reference": "d07636581795383e2fea2d711212d30f941f2039"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/443fe5f1498147e0fbc792142b5dc43e2e8a533f",
-                "reference": "443fe5f1498147e0fbc792142b5dc43e2e8a533f",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/d07636581795383e2fea2d711212d30f941f2039",
+                "reference": "d07636581795383e2fea2d711212d30f941f2039",
                 "shasum": ""
             },
             "require": {
@@ -669,7 +669,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2019-10-14T14:18:59+00:00"
+            "time": "2019-10-20T11:05:44+00:00"
         },
         {
             "name": "onefasteuro/shopifyclient",
@@ -677,12 +677,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyclient.git",
-                "reference": "340dd73250aa13432de4889f04440d8d6863c22c"
+                "reference": "a6daeff12bca4ba001bc770d668261d900149a98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/340dd73250aa13432de4889f04440d8d6863c22c",
-                "reference": "340dd73250aa13432de4889f04440d8d6863c22c",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyclient/zipball/a6daeff12bca4ba001bc770d668261d900149a98",
+                "reference": "a6daeff12bca4ba001bc770d668261d900149a98",
                 "shasum": ""
             },
             "require": {
@@ -690,7 +690,8 @@
                 "ext-json": "*",
                 "illuminate/config": "^6.0",
                 "illuminate/support": "^6.0",
-                "onefasteuro/shopifyutils": "dev-master"
+                "onefasteuro/shopifyutils": "dev-master",
+                "rmccue/requests": ">=1.0"
             },
             "require-dev": {
                 "mockery/mockery": "^1.1",
@@ -732,7 +733,7 @@
                 "laravel",
                 "shopify"
             ],
-            "time": "2019-10-18T15:38:20+00:00"
+            "time": "2019-10-20T14:39:04+00:00"
         },
         {
             "name": "onefasteuro/shopifyutils",
@@ -740,12 +741,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/onefasteuro/shopifyutils.git",
-                "reference": "ddd24f058f36220d616adb166060a7a5e02341d0"
+                "reference": "9a7f2fbeba03ccd5953a0fe078c0807c2ed27dc8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/ddd24f058f36220d616adb166060a7a5e02341d0",
-                "reference": "ddd24f058f36220d616adb166060a7a5e02341d0",
+                "url": "https://api.github.com/repos/onefasteuro/shopifyutils/zipball/9a7f2fbeba03ccd5953a0fe078c0807c2ed27dc8",
+                "reference": "9a7f2fbeba03ccd5953a0fe078c0807c2ed27dc8",
                 "shasum": ""
             },
             "require": {
@@ -780,20 +781,20 @@
             "keywords": [
                 "shopify"
             ],
-            "time": "2019-10-18T15:38:59+00:00"
+            "time": "2019-10-20T14:41:16+00:00"
         },
         {
             "name": "opis/closure",
-            "version": "3.4.0",
+            "version": "3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opis/closure.git",
-                "reference": "60a97fff133b1669a5b1776aa8ab06db3f3962b7"
+                "reference": "e79f851749c3caa836d7ccc01ede5828feb762c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opis/closure/zipball/60a97fff133b1669a5b1776aa8ab06db3f3962b7",
-                "reference": "60a97fff133b1669a5b1776aa8ab06db3f3962b7",
+                "url": "https://api.github.com/repos/opis/closure/zipball/e79f851749c3caa836d7ccc01ede5828feb762c7",
+                "reference": "e79f851749c3caa836d7ccc01ede5828feb762c7",
                 "shasum": ""
             },
             "require": {
@@ -841,7 +842,7 @@
                 "serialization",
                 "serialize"
             ],
-            "time": "2019-09-02T21:07:33+00:00"
+            "time": "2019-10-19T18:38:51+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -1163,6 +1164,55 @@
                 "uuid"
             ],
             "time": "2018-07-19T23:38:55+00:00"
+        },
+        {
+            "name": "rmccue/requests",
+            "version": "v1.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rmccue/Requests.git",
+                "reference": "87932f52ffad70504d93f04f15690cf16a089546"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rmccue/Requests/zipball/87932f52ffad70504d93f04f15690cf16a089546",
+                "reference": "87932f52ffad70504d93f04f15690cf16a089546",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2"
+            },
+            "require-dev": {
+                "requests/test-server": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Requests": "library/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "ISC"
+            ],
+            "authors": [
+                {
+                    "name": "Ryan McCue",
+                    "homepage": "http://ryanmccue.info"
+                }
+            ],
+            "description": "A HTTP library written in PHP, for human beings.",
+            "homepage": "http://github.com/rmccue/Requests",
+            "keywords": [
+                "curl",
+                "fsockopen",
+                "http",
+                "idna",
+                "ipv6",
+                "iri",
+                "sockets"
+            ],
+            "time": "2016-10-13T00:11:37+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
