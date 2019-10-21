@@ -41,6 +41,6 @@ class BillingController extends AbstractBaseController
 	
 	public function handleWebhooks()
 	{
-	
+		return response()->json([], 200);
 	}
 }
