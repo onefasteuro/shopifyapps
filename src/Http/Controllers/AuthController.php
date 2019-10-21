@@ -58,7 +58,7 @@ class AuthController extends AbstractBaseController
 
     public function completeAuth(Request $request, $app_handle)
     {
-        $service = Container::getInstance()->make('shopifyapps.auth.service');
+        $service = resolve('shopifyapps.auth.service');
 
     	$client_id = $this->config->get("shopifyapps.$app_handle.client_id");
     	$client_secret =  $this->config->get("shopifyapps.$app_handle.client_secret");

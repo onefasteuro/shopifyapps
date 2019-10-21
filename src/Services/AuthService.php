@@ -72,25 +72,8 @@ class AuthService implements AuthServiceInterface
 	    
 	    $url = sprintf(static::TOKEN_URL, $domain);
 	    
-	    $ch = curl_init();
-	    curl_setopt($ch, CURLOPT_URL, $url);
-	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	    curl_setopt($ch, CURLOPT_TIMEOUT, 20);
-	    curl_setopt($ch, CURLOPT_POST, true);
-	    curl_setopt($ch, CURLOPT_HEADER, true);
-	    curl_setopt($ch, CURLOPT_VERBOSE, false);
-	    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-	    
-	    $response = curl_exec($ch);
-	    
-	    //parse the response
-	    $token_response = ShopifyUtils::parseBody($response);
-	    $token_code = ShopifyUtils::parseStatusCode($response);
-	    $token_headers = ShopifyUtils::parseHeaders($response);
-	    
-	    curl_close($ch);
-	    
-	    return new GraphResponse($token_headers, $token_code, $token_response);
+	    $response = \Requests::post($url, [], $payload);
+	    return new GraphResponse($response);
     }
 
 }
